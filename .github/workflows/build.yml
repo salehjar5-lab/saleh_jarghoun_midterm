@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -19,649 +21,123 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create project folder structure
+      - name: Create directories
         run: |
           mkdir -p salehjarghoun_130121038/app/src/main/java/com/exam/android2
           mkdir -p salehjarghoun_130121038/app/src/main/res/layout
           mkdir -p salehjarghoun_130121038/app/src/main/res/menu
           mkdir -p salehjarghoun_130121038/app/src/main/res/values
           mkdir -p salehjarghoun_130121038/app/src/main/res/drawable
-          mkdir -p salehjarghoun_130121038/gradle/wrapper
-
-      # ─── settings.gradle ───────────────────────────────────────────────────────
-      - name: Create settings.gradle
-        run: |
-          cat > salehjarghoun_130121038/settings.gradle << 'SETTINGS'
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = "Android2Exam"
-          include ':app'
-          SETTINGS
-
-      # ─── Root build.gradle ─────────────────────────────────────────────────────
-      - name: Create root build.gradle
-        run: |
-          cat > salehjarghoun_130121038/build.gradle << 'ROOTGRADLE'
-          plugins {
-              id 'com.android.application' version '8.2.2' apply false
-          }
-          ROOTGRADLE
-
-      # ─── gradle-wrapper.properties ─────────────────────────────────────────────
-      - name: Create gradle-wrapper.properties
-        run: |
-          cat > salehjarghoun_130121038/gradle/wrapper/gradle-wrapper.properties << 'WRAPPER'
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-bin.zip
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          WRAPPER
-
-      # ─── gradlew wrapper jar ───────────────────────────────────────────────────
-      - name: Download Gradle wrapper
-        working-directory: salehjarghoun_130121038
-        run: |
-          curl -sL https://raw.githubusercontent.com/gradle/gradle/v8.4.0/gradle/wrapper/gradle-wrapper.jar \
-            -o gradle/wrapper/gradle-wrapper.jar || true
-          curl -sL https://raw.githubusercontent.com/gradle/gradle/master/gradlew \
-            -o gradlew 2>/dev/null || \
-          curl -sL https://raw.githubusercontent.com/android/nowinandroid/main/gradlew \
-            -o gradlew 2>/dev/null || true
-          chmod +x gradlew 2>/dev/null || true
-
-      # ─── app/build.gradle ──────────────────────────────────────────────────────
-      - name: Create app/build.gradle
-        run: |
-          cat > salehjarghoun_130121038/app/build.gradle << 'APPGRADLE'
-          plugins {
-              id 'com.android.application'
-          }
-
-          android {
-              namespace 'com.exam.android2'
-              compileSdk 34
-
-              defaultConfig {
-                  applicationId "com.exam.android2"
-                  minSdk 24
-                  targetSdk 34
-                  versionCode 1
-                  versionName "1.0"
-              }
-
-              buildTypes {
-                  release {
-                      minifyEnabled false
-                      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-                  }
-                  debug {
-                      debuggable true
-                  }
-              }
-
-              compileOptions {
-                  sourceCompatibility JavaVersion.VERSION_17
-                  targetCompatibility JavaVersion.VERSION_17
-              }
-
-              buildFeatures {
-                  viewBinding true
-              }
-          }
-
-          dependencies {
-              implementation 'androidx.appcompat:appcompat:1.7.0'
-              implementation 'com.google.android.material:material:1.12.0'
-              implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-              implementation 'androidx.viewpager2:viewpager2:1.1.0'
-              implementation 'androidx.fragment:fragment:1.8.3'
-          }
-          APPGRADLE
-
-      # ─── proguard-rules.pro ────────────────────────────────────────────────────
-      - name: Create proguard-rules.pro
-        run: |
-          cat > salehjarghoun_130121038/app/proguard-rules.pro << 'PRO'
-          # Default proguard rules
-          -keepattributes *Annotation*
-          PRO
-
-      # ─── AndroidManifest.xml ───────────────────────────────────────────────────
-      - name: Create AndroidManifest.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/AndroidManifest.xml << 'MANIFEST'
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-              <application
-                  android:allowBackup="true"
-                  android:icon="@mipmap/ic_launcher"
-                  android:label="@string/app_name"
-                  android:roundIcon="@mipmap/ic_launcher_round"
-                  android:supportsRtl="true"
-                  android:theme="@style/Theme.Android2Exam">
-
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-
-                  <activity
-                      android:name=".ModeActivity"
-                      android:exported="false"
-                      android:parentActivityName=".MainActivity">
-                      <meta-data
-                          android:name="android.support.PARENT_ACTIVITY"
-                          android:value=".MainActivity" />
-                  </activity>
-
-              </application>
-          </manifest>
-          MANIFEST
-
-      # ─── strings.xml ───────────────────────────────────────────────────────────
-      - name: Create strings.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/res/values/strings.xml << 'STRINGS'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <string name="app_name">Android2Exam</string>
-              <string name="hint_email">Email</string>
-              <string name="hint_password">Password</string>
-              <string name="btn_login">Login</string>
-              <string name="btn_set_mode">Set Mode</string>
-              <string name="tab_first">First</string>
-              <string name="tab_second">Second</string>
-              <string name="tab_third">Third</string>
-              <string name="snack_back">Press back again to exit</string>
-              <string name="mode_light">Light</string>
-              <string name="mode_night">Night</string>
-              <string name="mode_system">System</string>
-          </resources>
-          STRINGS
-
-      # ─── themes.xml ────────────────────────────────────────────────────────────
-      - name: Create themes.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/res/values/themes.xml << 'THEMES'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <style name="Theme.Android2Exam" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-                  <item name="colorPrimary">@color/purple_500</item>
-                  <item name="colorPrimaryVariant">@color/purple_700</item>
-                  <item name="colorOnPrimary">@color/white</item>
-                  <item name="colorSecondary">@color/teal_200</item>
-                  <item name="colorSecondaryVariant">@color/teal_700</item>
-                  <item name="colorOnSecondary">@color/black</item>
-                  <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-              </style>
-          </resources>
-          THEMES
-
-      # ─── colors.xml ────────────────────────────────────────────────────────────
-      - name: Create colors.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/res/values/colors.xml << 'COLORS'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <color name="purple_200">#FFBB86FC</color>
-              <color name="purple_500">#FF6200EE</color>
-              <color name="purple_700">#FF3700B3</color>
-              <color name="teal_200">#FF03DAC5</color>
-              <color name="teal_700">#FF018786</color>
-              <color name="black">#FF000000</color>
-              <color name="white">#FFFFFFFF</color>
-          </resources>
-          COLORS
-
-      # ─── popup_menu.xml ────────────────────────────────────────────────────────
-      - name: Create popup_menu.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/res/menu/popup_menu.xml << 'MENU'
-          <?xml version="1.0" encoding="utf-8"?>
-          <menu xmlns:android="http://schemas.android.com/apk/res/android">
-              <item
-                  android:id="@+id/menu_light"
-                  android:title="@string/mode_light" />
-              <item
-                  android:id="@+id/menu_night"
-                  android:title="@string/mode_night" />
-              <item
-                  android:id="@+id/menu_system"
-                  android:title="@string/mode_system" />
-          </menu>
-          MENU
-
-      # ─── activity_main.xml ─────────────────────────────────────────────────────
-      - name: Create activity_main.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/res/layout/activity_main.xml << 'MAINLAYOUT'
-          <?xml version="1.0" encoding="utf-8"?>
-          <LinearLayout
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:gravity="center"
-              android:padding="32dp">
-
-              <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Android 2 – Exam"
-                  android:textSize="22sp"
-                  android:textStyle="bold"
-                  android:layout_marginBottom="32dp" />
-
-              <EditText
-                  android:id="@+id/etEmail"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:hint="@string/hint_email"
-                  android:inputType="textEmailAddress"
-                  android:layout_marginBottom="16dp" />
-
-              <EditText
-                  android:id="@+id/etPassword"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:hint="@string/hint_password"
-                  android:inputType="textPassword"
-                  android:layout_marginBottom="24dp" />
-
-              <Button
-                  android:id="@+id/btnLogin"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:text="@string/btn_login"
-                  android:enabled="false" />
-
-          </LinearLayout>
-          MAINLAYOUT
-
-      # ─── activity_mode.xml ─────────────────────────────────────────────────────
-      - name: Create activity_mode.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/res/layout/activity_mode.xml << 'MODELAYOUT'
-          <?xml version="1.0" encoding="utf-8"?>
-          <LinearLayout
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
-
-              <com.google.android.material.tabs.TabLayout
-                  android:id="@+id/tabLayout"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  app:tabGravity="fill"
-                  app:tabMode="fixed" />
-
-              <androidx.viewpager2.widget.ViewPager2
-                  android:id="@+id/viewPager"
-                  android:layout_width="match_parent"
-                  android:layout_height="0dp"
-                  android:layout_weight="1" />
-
-              <Button
-                  android:id="@+id/btnSetMode"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center"
-                  android:layout_margin="16dp"
-                  android:text="@string/btn_set_mode" />
-
-          </LinearLayout>
-          MODELAYOUT
-
-      # ─── fragment_tab.xml ──────────────────────────────────────────────────────
-      - name: Create fragment_tab.xml
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/res/layout/fragment_tab.xml << 'TABLAYOUT'
-          <?xml version="1.0" encoding="utf-8"?>
-          <LinearLayout
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:gravity="center"
-              android:orientation="vertical">
-
-              <TextView
-                  android:id="@+id/tvTabTitle"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:textSize="24sp"
-                  android:textStyle="bold" />
-
-          </LinearLayout>
-          TABLAYOUT
-
-      # ─── MainActivity.java ─────────────────────────────────────────────────────
-      - name: Create MainActivity.java
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/MainActivity.java << 'MAINACTIVITY'
-          package com.exam.android2;
-
-          import android.content.Intent;
-          import android.os.Bundle;
-          import android.text.Editable;
-          import android.text.TextWatcher;
-          import android.util.Patterns;
-          import android.view.View;
-          import android.widget.Button;
-          import android.widget.EditText;
-          import androidx.appcompat.app.AppCompatActivity;
-          import com.google.android.material.snackbar.Snackbar;
-
-          public class MainActivity extends AppCompatActivity {
-
-              private EditText etEmail, etPassword;
-              private Button btnLogin;
-              private boolean backPressedOnce = false;
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-                  setContentView(R.layout.activity_main);
-
-                  etEmail    = findViewById(R.id.etEmail);
-                  etPassword = findViewById(R.id.etPassword);
-                  btnLogin   = findViewById(R.id.btnLogin);
-
-                  TextWatcher watcher = new TextWatcher() {
-                      @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
-                      @Override public void onTextChanged(CharSequence s, int st, int b, int c) {}
-                      @Override
-                      public void afterTextChanged(Editable s) {
-                          String email    = etEmail.getText().toString().trim();
-                          String password = etPassword.getText().toString();
-                          boolean emailOk = Patterns.EMAIL_ADDRESS.matcher(email).matches();
-                          boolean passOk  = password.length() >= 6;
-                          btnLogin.setEnabled(emailOk && passOk);
-                      }
-                  };
-
-                  etEmail.addTextChangedListener(watcher);
-                  etPassword.addTextChangedListener(watcher);
-
-                  btnLogin.setOnClickListener(v -> {
-                      Intent intent = new Intent(MainActivity.this, ModeActivity.class);
-                      startActivity(intent);
-                  });
-              }
-
-              @Override
-              public void onBackPressed() {
-                  if (backPressedOnce) {
-                      super.onBackPressed();
-                      return;
-                  }
-                  backPressedOnce = true;
-                  View root = findViewById(android.R.id.content);
-                  Snackbar.make(root, getString(R.string.snack_back), Snackbar.LENGTH_SHORT).show();
-                  new android.os.Handler().postDelayed(() -> backPressedOnce = false, 2000);
-              }
-          }
-          MAINACTIVITY
-
-      # ─── ModeActivity.java ─────────────────────────────────────────────────────
-      - name: Create ModeActivity.java
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/ModeActivity.java << 'MODEACTIVITY'
-          package com.exam.android2;
-
-          import android.os.Bundle;
-          import android.view.MenuItem;
-          import android.view.View;
-          import android.widget.Button;
-          import android.widget.PopupMenu;
-          import androidx.activity.OnBackPressedCallback;
-          import androidx.appcompat.app.AppCompatActivity;
-          import androidx.appcompat.app.AppCompatDelegate;
-          import androidx.viewpager2.widget.ViewPager2;
-          import com.google.android.material.tabs.TabLayout;
-          import com.google.android.material.tabs.TabLayoutMediator;
-
-          public class ModeActivity extends AppCompatActivity {
-
-              private ViewPager2 viewPager;
-              private TabLayout tabLayout;
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-                  setContentView(R.layout.activity_mode);
-
-                  // Enable Up / Ancestral Navigation button
-                  if (getSupportActionBar() != null) {
-                      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                  }
-
-                  tabLayout = findViewById(R.id.tabLayout);
-                  viewPager = findViewById(R.id.viewPager);
-                  Button btnSetMode = findViewById(R.id.btnSetMode);
-
-                  // Set up ViewPager2 with adapter
-                  TabPagerAdapter adapter = new TabPagerAdapter(this);
-                  viewPager.setAdapter(adapter);
-
-                  // Attach TabLayout to ViewPager2
-                  String[] tabTitles = {
-                      getString(R.string.tab_first),
-                      getString(R.string.tab_second),
-                      getString(R.string.tab_third)
-                  };
-                  new TabLayoutMediator(tabLayout, viewPager,
-                      (tab, position) -> tab.setText(tabTitles[position])
-                  ).attach();
-
-                  // Custom back-press: from tab 1 or 2 → go to tab 0; from tab 0 → go back
-                  getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-                      @Override
-                      public void handleOnBackPressed() {
-                          int current = viewPager.getCurrentItem();
-                          if (current > 0) {
-                              viewPager.setCurrentItem(0, true);
-                          } else {
-                              setEnabled(false);
-                              getOnBackPressedDispatcher().onBackPressed();
-                          }
-                      }
-                  });
-
-                  // PopupMenu for Set Mode button
-                  btnSetMode.setOnClickListener(v -> showPopupMenu(v));
-              }
-
-              private void showPopupMenu(View anchor) {
-                  PopupMenu popup = new PopupMenu(this, anchor);
-                  popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
-                  popup.setOnMenuItemClickListener(item -> {
-                      int id = item.getItemId();
-                      if (id == R.id.menu_light) {
-                          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                          return true;
-                      } else if (id == R.id.menu_night) {
-                          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                          return true;
-                      } else if (id == R.id.menu_system) {
-                          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                          return true;
-                      }
-                      return false;
-                  });
-                  popup.show();
-              }
-
-              // Handle Ancestral Navigation (Up button in ActionBar)
-              @Override
-              public boolean onOptionsItemSelected(MenuItem item) {
-                  if (item.getItemId() == android.R.id.home) {
-                      finish();  // navigates back to MainActivity (parent)
-                      return true;
-                  }
-                  return super.onOptionsItemSelected(item);
-              }
-          }
-          MODEACTIVITY
-
-      # ─── TabPagerAdapter.java ──────────────────────────────────────────────────
-      - name: Create TabPagerAdapter.java
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/TabPagerAdapter.java << 'ADAPTER'
-          package com.exam.android2;
-
-          import androidx.annotation.NonNull;
-          import androidx.fragment.app.Fragment;
-          import androidx.fragment.app.FragmentActivity;
-          import androidx.viewpager2.adapter.FragmentStateAdapter;
-
-          public class TabPagerAdapter extends FragmentStateAdapter {
-
-              private static final int TAB_COUNT = 3;
-
-              public TabPagerAdapter(@NonNull FragmentActivity activity) {
-                  super(activity);
-              }
-
-              @NonNull
-              @Override
-              public Fragment createFragment(int position) {
-                  String[] titles = {"First", "Second", "Third"};
-                  return TabFragment.newInstance(titles[position]);
-              }
-
-              @Override
-              public int getItemCount() {
-                  return TAB_COUNT;
-              }
-          }
-          ADAPTER
-
-      # ─── TabFragment.java ──────────────────────────────────────────────────────
-      - name: Create TabFragment.java
-        run: |
-          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/TabFragment.java << 'TABFRAGMENT'
-          package com.exam.android2;
-
-          import android.os.Bundle;
-          import android.view.LayoutInflater;
-          import android.view.View;
-          import android.view.ViewGroup;
-          import android.widget.TextView;
-          import androidx.annotation.NonNull;
-          import androidx.annotation.Nullable;
-          import androidx.fragment.app.Fragment;
-
-          public class TabFragment extends Fragment {
-
-              private static final String ARG_TITLE = "tab_title";
-
-              public static TabFragment newInstance(String title) {
-                  TabFragment fragment = new TabFragment();
-                  Bundle args = new Bundle();
-                  args.putString(ARG_TITLE, title);
-                  fragment.setArguments(args);
-                  return fragment;
-              }
-
-              @Nullable
-              @Override
-              public View onCreateView(@NonNull LayoutInflater inflater,
-                                       @Nullable ViewGroup container,
-                                       @Nullable Bundle savedInstanceState) {
-                  View view = inflater.inflate(R.layout.fragment_tab, container, false);
-                  TextView tv = view.findViewById(R.id.tvTabTitle);
-                  if (getArguments() != null) {
-                      tv.setText(getArguments().getString(ARG_TITLE));
-                  }
-                  return view;
-              }
-          }
-          TABFRAGMENT
-
-      # ─── ic_launcher drawables (minimal valid PNG placeholders) ────────────────
-      - name: Create minimal launcher icon drawables
-        run: |
           mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-hdpi
           mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-mdpi
           mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-xhdpi
           mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-xxhdpi
           mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-xxxhdpi
+          mkdir -p salehjarghoun_130121038/gradle/wrapper
 
-          # Generate a simple coloured PNG using Python (avoids needing ImageMagick)
-          python3 - << 'PYEOF'
-          import struct, zlib, os
+      - name: Write gradle.properties
+        run: |
+          echo 'YW5kcm9pZC51c2VBbmRyb2lkWD10cnVlCmFuZHJvaWQuZW5hYmxlSmV0aWZpZXI9dHJ1ZQpvcmcuZ3JhZGxlLmp2bWFyZ3M9LVhteDIwNDhtIC1EZmlsZS5lbmNvZGluZz1VVEYtOAo=' | base64 -d > salehjarghoun_130121038/gradle.properties
 
-          def make_png(size, r, g, b):
-              def chunk(name, data):
-                  c = zlib.crc32(name + data) & 0xffffffff
-                  return struct.pack('>I', len(data)) + name + data + struct.pack('>I', c)
-              ihdr = struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0)
-              raw = b''
-              for _ in range(size):
-                  row = b'\x00' + bytes([r, g, b] * size)
-                  raw += row
-              idat = zlib.compress(raw)
-              return b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', ihdr) + chunk(b'IDAT', idat) + chunk(b'IEND', b'')
+      - name: Write settings.gradle
+        run: |
+          echo 'cGx1Z2luTWFuYWdlbWVudCB7CiAgICByZXBvc2l0b3JpZXMgewogICAgICAgIGdvb2dsZSgpCiAgICAgICAgbWF2ZW5DZW50cmFsKCkKICAgICAgICBncmFkbGVQbHVnaW5Qb3J0YWwoKQogICAgfQp9CmRlcGVuZGVuY3lSZXNvbHV0aW9uTWFuYWdlbWVudCB7CiAgICByZXBvc2l0b3JpZXNNb2RlLnNldChSZXBvc2l0b3JpZXNNb2RlLkZBSUxfT05fUFJPSkVDVF9SRVBPUykKICAgIHJlcG9zaXRvcmllcyB7CiAgICAgICAgZ29vZ2xlKCkKICAgICAgICBtYXZlbkNlbnRyYWwoKQogICAgfQp9CnJvb3RQcm9qZWN0Lm5hbWUgPSAiQW5kcm9pZDJFeGFtIgppbmNsdWRlICc6YXBwJwo=' | base64 -d > salehjarghoun_130121038/settings.gradle
 
-          sizes = {'mdpi':48,'hdpi':72,'xhdpi':96,'xxhdpi':144,'xxxhdpi':192}
-          for density, sz in sizes.items():
-              data = make_png(sz, 103, 58, 183)  # purple
-              path = f'salehjarghoun_130121038/app/src/main/res/mipmap-{density}/ic_launcher.png'
-              with open(path, 'wb') as f: f.write(data)
-              path2 = f'salehjarghoun_130121038/app/src/main/res/mipmap-{density}/ic_launcher_round.png'
-              with open(path2, 'wb') as f: f.write(data)
-          print("Icons created")
-          PYEOF
+      - name: Write build.gradle
+        run: |
+          echo 'cGx1Z2lucyB7CiAgICBpZCAnY29tLmFuZHJvaWQuYXBwbGljYXRpb24nIHZlcnNpb24gJzguMi4yJyBhcHBseSBmYWxzZQp9Cg==' | base64 -d > salehjarghoun_130121038/build.gradle
 
-      # ─── Set up Gradle Wrapper properly using Gradle itself ───────────────────
-      - name: Set up Gradle Wrapper
-        uses: gradle/actions/setup-gradle@v3
+      - name: Write gradle-wrapper.properties
+        run: |
+          echo 'ZGlzdHJpYnV0aW9uQmFzZT1HUkFETEVfVVNFUl9IT01FCmRpc3RyaWJ1dGlvblBhdGg9d3JhcHBlci9kaXN0cwpkaXN0cmlidXRpb25Vcmw9aHR0cHNcOi8vc2VydmljZXMuZ3JhZGxlLm9yZy9kaXN0cmlidXRpb25zL2dyYWRsZS04LjQtYmluLnppcAp6aXBTdG9yZUJhc2U9R1JBRExFX1VTRVJfSE9NRQp6aXBTdG9yZVBhdGg9d3JhcHBlci9kaXN0cwo=' | base64 -d > salehjarghoun_130121038/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Write build.gradle
+        run: |
+          echo 'cGx1Z2lucyB7CiAgICBpZCAnY29tLmFuZHJvaWQuYXBwbGljYXRpb24nCn0KCmFuZHJvaWQgewogICAgbmFtZXNwYWNlICdjb20uZXhhbS5hbmRyb2lkMicKICAgIGNvbXBpbGVTZGsgMzQKCiAgICBkZWZhdWx0Q29uZmlnIHsKICAgICAgICBhcHBsaWNhdGlvbklkICJjb20uZXhhbS5hbmRyb2lkMiIKICAgICAgICBtaW5TZGsgMjQKICAgICAgICB0YXJnZXRTZGsgMzQKICAgICAgICB2ZXJzaW9uQ29kZSAxCiAgICAgICAgdmVyc2lvbk5hbWUgIjEuMCIKICAgIH0KCiAgICBidWlsZFR5cGVzIHsKICAgICAgICByZWxlYXNlIHsKICAgICAgICAgICAgbWluaWZ5RW5hYmxlZCBmYWxzZQogICAgICAgICAgICBwcm9ndWFyZEZpbGVzIGdldERlZmF1bHRQcm9ndWFyZEZpbGUoJ3Byb2d1YXJkLWFuZHJvaWQtb3B0aW1pemUudHh0JyksICdwcm9ndWFyZC1ydWxlcy5wcm8nCiAgICAgICAgfQogICAgICAgIGRlYnVnIHsKICAgICAgICAgICAgZGVidWdnYWJsZSB0cnVlCiAgICAgICAgfQogICAgfQoKICAgIGNvbXBpbGVPcHRpb25zIHsKICAgICAgICBzb3VyY2VDb21wYXRpYmlsaXR5IEphdmFWZXJzaW9uLlZFUlNJT05fMTcKICAgICAgICB0YXJnZXRDb21wYXRpYmlsaXR5IEphdmFWZXJzaW9uLlZFUlNJT05fMTcKICAgIH0KfQoKZGVwZW5kZW5jaWVzIHsKICAgIGltcGxlbWVudGF0aW9uICdhbmRyb2lkeC5hcHBjb21wYXQ6YXBwY29tcGF0OjEuNy4wJwogICAgaW1wbGVtZW50YXRpb24gJ2NvbS5nb29nbGUuYW5kcm9pZC5tYXRlcmlhbDptYXRlcmlhbDoxLjEyLjAnCiAgICBpbXBsZW1lbnRhdGlvbiAnYW5kcm9pZHguY29uc3RyYWludGxheW91dDpjb25zdHJhaW50bGF5b3V0OjIuMS40JwogICAgaW1wbGVtZW50YXRpb24gJ2FuZHJvaWR4LnZpZXdwYWdlcjI6dmlld3BhZ2VyMjoxLjEuMCcKICAgIGltcGxlbWVudGF0aW9uICdhbmRyb2lkeC5mcmFnbWVudDpmcmFnbWVudDoxLjguMycKfQo=' | base64 -d > salehjarghoun_130121038/app/build.gradle
+
+      - name: Write proguard-rules.pro
+        run: |
+          echo 'IyBQcm9HdWFyZCBydWxlcwo=' | base64 -d > salehjarghoun_130121038/app/proguard-rules.pro
+
+      - name: Write AndroidManifest.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+CiAgICA8YXBwbGljYXRpb24KICAgICAgICBhbmRyb2lkOmFsbG93QmFja3VwPSJ0cnVlIgogICAgICAgIGFuZHJvaWQ6aWNvbj0iQG1pcG1hcC9pY19sYXVuY2hlciIKICAgICAgICBhbmRyb2lkOmxhYmVsPSJAc3RyaW5nL2FwcF9uYW1lIgogICAgICAgIGFuZHJvaWQ6cm91bmRJY29uPSJAbWlwbWFwL2ljX2xhdW5jaGVyX3JvdW5kIgogICAgICAgIGFuZHJvaWQ6c3VwcG9ydHNSdGw9InRydWUiCiAgICAgICAgYW5kcm9pZDp0aGVtZT0iQHN0eWxlL1RoZW1lLkFuZHJvaWQyRXhhbSI+CiAgICAgICAgPGFjdGl2aXR5CiAgICAgICAgICAgIGFuZHJvaWQ6bmFtZT0iLk1haW5BY3Rpdml0eSIKICAgICAgICAgICAgYW5kcm9pZDpleHBvcnRlZD0idHJ1ZSI+CiAgICAgICAgICAgIDxpbnRlbnQtZmlsdGVyPgogICAgICAgICAgICAgICAgPGFjdGlvbiBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmFjdGlvbi5NQUlOIiAvPgogICAgICAgICAgICAgICAgPGNhdGVnb3J5IGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5pbnRlbnQuY2F0ZWdvcnkuTEFVTkNIRVIiIC8+CiAgICAgICAgICAgIDwvaW50ZW50LWZpbHRlcj4KICAgICAgICA8L2FjdGl2aXR5PgogICAgICAgIDxhY3Rpdml0eQogICAgICAgICAgICBhbmRyb2lkOm5hbWU9Ii5Nb2RlQWN0aXZpdHkiCiAgICAgICAgICAgIGFuZHJvaWQ6ZXhwb3J0ZWQ9ImZhbHNlIgogICAgICAgICAgICBhbmRyb2lkOnBhcmVudEFjdGl2aXR5TmFtZT0iLk1haW5BY3Rpdml0eSI+CiAgICAgICAgICAgIDxtZXRhLWRhdGEKICAgICAgICAgICAgICAgIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5zdXBwb3J0LlBBUkVOVF9BQ1RJVklUWSIKICAgICAgICAgICAgICAgIGFuZHJvaWQ6dmFsdWU9Ii5NYWluQWN0aXZpdHkiIC8+CiAgICAgICAgPC9hY3Rpdml0eT4KICAgIDwvYXBwbGljYXRpb24+CjwvbWFuaWZlc3Q+Cg==' | base64 -d > salehjarghoun_130121038/app/src/main/AndroidManifest.xml
+
+      - name: Write strings.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHJlc291cmNlcz4KICAgIDxzdHJpbmcgbmFtZT0iYXBwX25hbWUiPkFuZHJvaWQyRXhhbTwvc3RyaW5nPgogICAgPHN0cmluZyBuYW1lPSJoaW50X2VtYWlsIj5FbWFpbDwvc3RyaW5nPgogICAgPHN0cmluZyBuYW1lPSJoaW50X3Bhc3N3b3JkIj5QYXNzd29yZDwvc3RyaW5nPgogICAgPHN0cmluZyBuYW1lPSJidG5fbG9naW4iPkxvZ2luPC9zdHJpbmc+CiAgICA8c3RyaW5nIG5hbWU9ImJ0bl9zZXRfbW9kZSI+U2V0IE1vZGU8L3N0cmluZz4KICAgIDxzdHJpbmcgbmFtZT0idGFiX2ZpcnN0Ij5GaXJzdDwvc3RyaW5nPgogICAgPHN0cmluZyBuYW1lPSJ0YWJfc2Vjb25kIj5TZWNvbmQ8L3N0cmluZz4KICAgIDxzdHJpbmcgbmFtZT0idGFiX3RoaXJkIj5UaGlyZDwvc3RyaW5nPgogICAgPHN0cmluZyBuYW1lPSJzbmFja19iYWNrIj5QcmVzcyBiYWNrIGFnYWluIHRvIGV4aXQ8L3N0cmluZz4KICAgIDxzdHJpbmcgbmFtZT0ibW9kZV9saWdodCI+TGlnaHQ8L3N0cmluZz4KICAgIDxzdHJpbmcgbmFtZT0ibW9kZV9uaWdodCI+TmlnaHQ8L3N0cmluZz4KICAgIDxzdHJpbmcgbmFtZT0ibW9kZV9zeXN0ZW0iPlN5c3RlbTwvc3RyaW5nPgo8L3Jlc291cmNlcz4K' | base64 -d > salehjarghoun_130121038/app/src/main/res/values/strings.xml
+
+      - name: Write themes.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHJlc291cmNlcz4KICAgIDxzdHlsZSBuYW1lPSJUaGVtZS5BbmRyb2lkMkV4YW0iIHBhcmVudD0iVGhlbWUuTWF0ZXJpYWxDb21wb25lbnRzLkRheU5pZ2h0LkRhcmtBY3Rpb25CYXIiPgogICAgICAgIDxpdGVtIG5hbWU9ImNvbG9yUHJpbWFyeSI+QGNvbG9yL3B1cnBsZV81MDA8L2l0ZW0+CiAgICAgICAgPGl0ZW0gbmFtZT0iY29sb3JQcmltYXJ5VmFyaWFudCI+QGNvbG9yL3B1cnBsZV83MDA8L2l0ZW0+CiAgICAgICAgPGl0ZW0gbmFtZT0iY29sb3JPblByaW1hcnkiPkBjb2xvci93aGl0ZTwvaXRlbT4KICAgICAgICA8aXRlbSBuYW1lPSJjb2xvclNlY29uZGFyeSI+QGNvbG9yL3RlYWxfMjAwPC9pdGVtPgogICAgICAgIDxpdGVtIG5hbWU9ImNvbG9yU2Vjb25kYXJ5VmFyaWFudCI+QGNvbG9yL3RlYWxfNzAwPC9pdGVtPgogICAgICAgIDxpdGVtIG5hbWU9ImNvbG9yT25TZWNvbmRhcnkiPkBjb2xvci9ibGFjazwvaXRlbT4KICAgICAgICA8aXRlbSBuYW1lPSJhbmRyb2lkOnN0YXR1c0JhckNvbG9yIj4/YXR0ci9jb2xvclByaW1hcnlWYXJpYW50PC9pdGVtPgogICAgPC9zdHlsZT4KPC9yZXNvdXJjZXM+Cg==' | base64 -d > salehjarghoun_130121038/app/src/main/res/values/themes.xml
+
+      - name: Write colors.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHJlc291cmNlcz4KICAgIDxjb2xvciBuYW1lPSJwdXJwbGVfMjAwIj4jRkZCQjg2RkM8L2NvbG9yPgogICAgPGNvbG9yIG5hbWU9InB1cnBsZV81MDAiPiNGRjYyMDBFRTwvY29sb3I+CiAgICA8Y29sb3IgbmFtZT0icHVycGxlXzcwMCI+I0ZGMzcwMEIzPC9jb2xvcj4KICAgIDxjb2xvciBuYW1lPSJ0ZWFsXzIwMCI+I0ZGMDNEQUM1PC9jb2xvcj4KICAgIDxjb2xvciBuYW1lPSJ0ZWFsXzcwMCI+I0ZGMDE4Nzg2PC9jb2xvcj4KICAgIDxjb2xvciBuYW1lPSJibGFjayI+I0ZGMDAwMDAwPC9jb2xvcj4KICAgIDxjb2xvciBuYW1lPSJ3aGl0ZSI+I0ZGRkZGRkZGPC9jb2xvcj4KPC9yZXNvdXJjZXM+Cg==' | base64 -d > salehjarghoun_130121038/app/src/main/res/values/colors.xml
+
+      - name: Write popup_menu.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPG1lbnUgeG1sbnM6YW5kcm9pZD0iaHR0cDovL3NjaGVtYXMuYW5kcm9pZC5jb20vYXBrL3Jlcy9hbmRyb2lkIj4KICAgIDxpdGVtIGFuZHJvaWQ6aWQ9IkAraWQvbWVudV9saWdodCIgIGFuZHJvaWQ6dGl0bGU9IkBzdHJpbmcvbW9kZV9saWdodCIgLz4KICAgIDxpdGVtIGFuZHJvaWQ6aWQ9IkAraWQvbWVudV9uaWdodCIgIGFuZHJvaWQ6dGl0bGU9IkBzdHJpbmcvbW9kZV9uaWdodCIgLz4KICAgIDxpdGVtIGFuZHJvaWQ6aWQ9IkAraWQvbWVudV9zeXN0ZW0iIGFuZHJvaWQ6dGl0bGU9IkBzdHJpbmcvbW9kZV9zeXN0ZW0iIC8+CjwvbWVudT4K' | base64 -d > salehjarghoun_130121038/app/src/main/res/menu/popup_menu.xml
+
+      - name: Write activity_main.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPExpbmVhckxheW91dAogICAgeG1sbnM6YW5kcm9pZD0iaHR0cDovL3NjaGVtYXMuYW5kcm9pZC5jb20vYXBrL3Jlcy9hbmRyb2lkIgogICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9Im1hdGNoX3BhcmVudCIKICAgIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0ibWF0Y2hfcGFyZW50IgogICAgYW5kcm9pZDpvcmllbnRhdGlvbj0idmVydGljYWwiCiAgICBhbmRyb2lkOmdyYXZpdHk9ImNlbnRlciIKICAgIGFuZHJvaWQ6cGFkZGluZz0iMzJkcCI+CiAgICA8VGV4dFZpZXcKICAgICAgICBhbmRyb2lkOmxheW91dF93aWR0aD0id3JhcF9jb250ZW50IgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0id3JhcF9jb250ZW50IgogICAgICAgIGFuZHJvaWQ6dGV4dD0iQW5kcm9pZCAyIC0gRXhhbSIKICAgICAgICBhbmRyb2lkOnRleHRTaXplPSIyMnNwIgogICAgICAgIGFuZHJvaWQ6dGV4dFN0eWxlPSJib2xkIgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X21hcmdpbkJvdHRvbT0iMzJkcCIgLz4KICAgIDxFZGl0VGV4dAogICAgICAgIGFuZHJvaWQ6aWQ9IkAraWQvZXRFbWFpbCIKICAgICAgICBhbmRyb2lkOmxheW91dF93aWR0aD0ibWF0Y2hfcGFyZW50IgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0id3JhcF9jb250ZW50IgogICAgICAgIGFuZHJvaWQ6aGludD0iQHN0cmluZy9oaW50X2VtYWlsIgogICAgICAgIGFuZHJvaWQ6aW5wdXRUeXBlPSJ0ZXh0RW1haWxBZGRyZXNzIgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X21hcmdpbkJvdHRvbT0iMTZkcCIgLz4KICAgIDxFZGl0VGV4dAogICAgICAgIGFuZHJvaWQ6aWQ9IkAraWQvZXRQYXNzd29yZCIKICAgICAgICBhbmRyb2lkOmxheW91dF93aWR0aD0ibWF0Y2hfcGFyZW50IgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0id3JhcF9jb250ZW50IgogICAgICAgIGFuZHJvaWQ6aGludD0iQHN0cmluZy9oaW50X3Bhc3N3b3JkIgogICAgICAgIGFuZHJvaWQ6aW5wdXRUeXBlPSJ0ZXh0UGFzc3dvcmQiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfbWFyZ2luQm90dG9tPSIyNGRwIiAvPgogICAgPEJ1dHRvbgogICAgICAgIGFuZHJvaWQ6aWQ9IkAraWQvYnRuTG9naW4iCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9Im1hdGNoX3BhcmVudCIKICAgICAgICBhbmRyb2lkOmxheW91dF9oZWlnaHQ9IndyYXBfY29udGVudCIKICAgICAgICBhbmRyb2lkOnRleHQ9IkBzdHJpbmcvYnRuX2xvZ2luIgogICAgICAgIGFuZHJvaWQ6ZW5hYmxlZD0iZmFsc2UiIC8+CjwvTGluZWFyTGF5b3V0Pgo=' | base64 -d > salehjarghoun_130121038/app/src/main/res/layout/activity_main.xml
+
+      - name: Write activity_mode.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPExpbmVhckxheW91dAogICAgeG1sbnM6YW5kcm9pZD0iaHR0cDovL3NjaGVtYXMuYW5kcm9pZC5jb20vYXBrL3Jlcy9hbmRyb2lkIgogICAgeG1sbnM6YXBwPSJodHRwOi8vc2NoZW1hcy5hbmRyb2lkLmNvbS9hcGsvcmVzLWF1dG8iCiAgICBhbmRyb2lkOmxheW91dF93aWR0aD0ibWF0Y2hfcGFyZW50IgogICAgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSJtYXRjaF9wYXJlbnQiCiAgICBhbmRyb2lkOm9yaWVudGF0aW9uPSJ2ZXJ0aWNhbCI+CiAgICA8Y29tLmdvb2dsZS5hbmRyb2lkLm1hdGVyaWFsLnRhYnMuVGFiTGF5b3V0CiAgICAgICAgYW5kcm9pZDppZD0iQCtpZC90YWJMYXlvdXQiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9Im1hdGNoX3BhcmVudCIKICAgICAgICBhbmRyb2lkOmxheW91dF9oZWlnaHQ9IndyYXBfY29udGVudCIKICAgICAgICBhcHA6dGFiR3Jhdml0eT0iZmlsbCIKICAgICAgICBhcHA6dGFiTW9kZT0iZml4ZWQiIC8+CiAgICA8YW5kcm9pZHgudmlld3BhZ2VyMi53aWRnZXQuVmlld1BhZ2VyMgogICAgICAgIGFuZHJvaWQ6aWQ9IkAraWQvdmlld1BhZ2VyIgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJtYXRjaF9wYXJlbnQiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSIwZHAiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfd2VpZ2h0PSIxIiAvPgogICAgPEJ1dHRvbgogICAgICAgIGFuZHJvaWQ6aWQ9IkAraWQvYnRuU2V0TW9kZSIKICAgICAgICBhbmRyb2lkOmxheW91dF93aWR0aD0id3JhcF9jb250ZW50IgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0id3JhcF9jb250ZW50IgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X2dyYXZpdHk9ImNlbnRlciIKICAgICAgICBhbmRyb2lkOmxheW91dF9tYXJnaW49IjE2ZHAiCiAgICAgICAgYW5kcm9pZDp0ZXh0PSJAc3RyaW5nL2J0bl9zZXRfbW9kZSIgLz4KPC9MaW5lYXJMYXlvdXQ+Cg==' | base64 -d > salehjarghoun_130121038/app/src/main/res/layout/activity_mode.xml
+
+      - name: Write fragment_tab.xml
+        run: |
+          echo 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPExpbmVhckxheW91dAogICAgeG1sbnM6YW5kcm9pZD0iaHR0cDovL3NjaGVtYXMuYW5kcm9pZC5jb20vYXBrL3Jlcy9hbmRyb2lkIgogICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9Im1hdGNoX3BhcmVudCIKICAgIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0ibWF0Y2hfcGFyZW50IgogICAgYW5kcm9pZDpncmF2aXR5PSJjZW50ZXIiCiAgICBhbmRyb2lkOm9yaWVudGF0aW9uPSJ2ZXJ0aWNhbCI+CiAgICA8VGV4dFZpZXcKICAgICAgICBhbmRyb2lkOmlkPSJAK2lkL3R2VGFiVGl0bGUiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9IndyYXBfY29udGVudCIKICAgICAgICBhbmRyb2lkOmxheW91dF9oZWlnaHQ9IndyYXBfY29udGVudCIKICAgICAgICBhbmRyb2lkOnRleHRTaXplPSIyNHNwIgogICAgICAgIGFuZHJvaWQ6dGV4dFN0eWxlPSJib2xkIiAvPgo8L0xpbmVhckxheW91dD4K' | base64 -d > salehjarghoun_130121038/app/src/main/res/layout/fragment_tab.xml
+
+      - name: Write MainActivity.java
+        run: |
+          echo 'cGFja2FnZSBjb20uZXhhbS5hbmRyb2lkMjsKCmltcG9ydCBhbmRyb2lkLmNvbnRlbnQuSW50ZW50OwppbXBvcnQgYW5kcm9pZC5vcy5CdW5kbGU7CmltcG9ydCBhbmRyb2lkLm9zLkhhbmRsZXI7CmltcG9ydCBhbmRyb2lkLnRleHQuRWRpdGFibGU7CmltcG9ydCBhbmRyb2lkLnRleHQuVGV4dFdhdGNoZXI7CmltcG9ydCBhbmRyb2lkLnV0aWwuUGF0dGVybnM7CmltcG9ydCBhbmRyb2lkLnZpZXcuVmlldzsKaW1wb3J0IGFuZHJvaWQud2lkZ2V0LkJ1dHRvbjsKaW1wb3J0IGFuZHJvaWQud2lkZ2V0LkVkaXRUZXh0OwppbXBvcnQgYW5kcm9pZHguYXBwY29tcGF0LmFwcC5BcHBDb21wYXRBY3Rpdml0eTsKaW1wb3J0IGNvbS5nb29nbGUuYW5kcm9pZC5tYXRlcmlhbC5zbmFja2Jhci5TbmFja2JhcjsKCnB1YmxpYyBjbGFzcyBNYWluQWN0aXZpdHkgZXh0ZW5kcyBBcHBDb21wYXRBY3Rpdml0eSB7CgogICAgcHJpdmF0ZSBFZGl0VGV4dCBldEVtYWlsLCBldFBhc3N3b3JkOwogICAgcHJpdmF0ZSBCdXR0b24gYnRuTG9naW47CiAgICBwcml2YXRlIGJvb2xlYW4gYmFja1ByZXNzZWRPbmNlID0gZmFsc2U7CgogICAgQE92ZXJyaWRlCiAgICBwcm90ZWN0ZWQgdm9pZCBvbkNyZWF0ZShCdW5kbGUgc2F2ZWRJbnN0YW5jZVN0YXRlKSB7CiAgICAgICAgc3VwZXIub25DcmVhdGUoc2F2ZWRJbnN0YW5jZVN0YXRlKTsKICAgICAgICBzZXRDb250ZW50VmlldyhSLmxheW91dC5hY3Rpdml0eV9tYWluKTsKCiAgICAgICAgZXRFbWFpbCAgICA9IGZpbmRWaWV3QnlJZChSLmlkLmV0RW1haWwpOwogICAgICAgIGV0UGFzc3dvcmQgPSBmaW5kVmlld0J5SWQoUi5pZC5ldFBhc3N3b3JkKTsKICAgICAgICBidG5Mb2dpbiAgID0gZmluZFZpZXdCeUlkKFIuaWQuYnRuTG9naW4pOwoKICAgICAgICBUZXh0V2F0Y2hlciB3YXRjaGVyID0gbmV3IFRleHRXYXRjaGVyKCkgewogICAgICAgICAgICBAT3ZlcnJpZGUgcHVibGljIHZvaWQgYmVmb3JlVGV4dENoYW5nZWQoQ2hhclNlcXVlbmNlIHMsIGludCBzdCwgaW50IGMsIGludCBhKSB7fQogICAgICAgICAgICBAT3ZlcnJpZGUgcHVibGljIHZvaWQgb25UZXh0Q2hhbmdlZChDaGFyU2VxdWVuY2UgcywgaW50IHN0LCBpbnQgYiwgaW50IGMpIHt9CiAgICAgICAgICAgIEBPdmVycmlkZQogICAgICAgICAgICBwdWJsaWMgdm9pZCBhZnRlclRleHRDaGFuZ2VkKEVkaXRhYmxlIHMpIHsKICAgICAgICAgICAgICAgIFN0cmluZyBlbWFpbCAgICA9IGV0RW1haWwuZ2V0VGV4dCgpLnRvU3RyaW5nKCkudHJpbSgpOwogICAgICAgICAgICAgICAgU3RyaW5nIHBhc3N3b3JkID0gZXRQYXNzd29yZC5nZXRUZXh0KCkudG9TdHJpbmcoKTsKICAgICAgICAgICAgICAgIGJvb2xlYW4gZW1haWxPayA9IFBhdHRlcm5zLkVNQUlMX0FERFJFU1MubWF0Y2hlcihlbWFpbCkubWF0Y2hlcygpOwogICAgICAgICAgICAgICAgYm9vbGVhbiBwYXNzT2sgID0gcGFzc3dvcmQubGVuZ3RoKCkgPj0gNjsKICAgICAgICAgICAgICAgIGJ0bkxvZ2luLnNldEVuYWJsZWQoZW1haWxPayAmJiBwYXNzT2spOwogICAgICAgICAgICB9CiAgICAgICAgfTsKCiAgICAgICAgZXRFbWFpbC5hZGRUZXh0Q2hhbmdlZExpc3RlbmVyKHdhdGNoZXIpOwogICAgICAgIGV0UGFzc3dvcmQuYWRkVGV4dENoYW5nZWRMaXN0ZW5lcih3YXRjaGVyKTsKCiAgICAgICAgYnRuTG9naW4uc2V0T25DbGlja0xpc3RlbmVyKHYgLT4KICAgICAgICAgICAgc3RhcnRBY3Rpdml0eShuZXcgSW50ZW50KE1haW5BY3Rpdml0eS50aGlzLCBNb2RlQWN0aXZpdHkuY2xhc3MpKQogICAgICAgICk7CiAgICB9CgogICAgQE92ZXJyaWRlCiAgICBwdWJsaWMgdm9pZCBvbkJhY2tQcmVzc2VkKCkgewogICAgICAgIGlmIChiYWNrUHJlc3NlZE9uY2UpIHsKICAgICAgICAgICAgc3VwZXIub25CYWNrUHJlc3NlZCgpOwogICAgICAgICAgICByZXR1cm47CiAgICAgICAgfQogICAgICAgIGJhY2tQcmVzc2VkT25jZSA9IHRydWU7CiAgICAgICAgVmlldyByb290ID0gZmluZFZpZXdCeUlkKGFuZHJvaWQuUi5pZC5jb250ZW50KTsKICAgICAgICBTbmFja2Jhci5tYWtlKHJvb3QsIGdldFN0cmluZyhSLnN0cmluZy5zbmFja19iYWNrKSwgU25hY2tiYXIuTEVOR1RIX1NIT1JUKS5zaG93KCk7CiAgICAgICAgbmV3IEhhbmRsZXIoKS5wb3N0RGVsYXllZCgoKSAtPiBiYWNrUHJlc3NlZE9uY2UgPSBmYWxzZSwgMjAwMCk7CiAgICB9Cn0K' | base64 -d > salehjarghoun_130121038/app/src/main/java/com/exam/android2/MainActivity.java
+
+      - name: Write ModeActivity.java
+        run: |
+          echo 'cGFja2FnZSBjb20uZXhhbS5hbmRyb2lkMjsKCmltcG9ydCBhbmRyb2lkLm9zLkJ1bmRsZTsKaW1wb3J0IGFuZHJvaWQudmlldy5NZW51SXRlbTsKaW1wb3J0IGFuZHJvaWQudmlldy5WaWV3OwppbXBvcnQgYW5kcm9pZC53aWRnZXQuQnV0dG9uOwppbXBvcnQgYW5kcm9pZC53aWRnZXQuUG9wdXBNZW51OwppbXBvcnQgYW5kcm9pZHguYWN0aXZpdHkuT25CYWNrUHJlc3NlZENhbGxiYWNrOwppbXBvcnQgYW5kcm9pZHguYXBwY29tcGF0LmFwcC5BcHBDb21wYXRBY3Rpdml0eTsKaW1wb3J0IGFuZHJvaWR4LmFwcGNvbXBhdC5hcHAuQXBwQ29tcGF0RGVsZWdhdGU7CmltcG9ydCBhbmRyb2lkeC52aWV3cGFnZXIyLndpZGdldC5WaWV3UGFnZXIyOwppbXBvcnQgY29tLmdvb2dsZS5hbmRyb2lkLm1hdGVyaWFsLnRhYnMuVGFiTGF5b3V0OwppbXBvcnQgY29tLmdvb2dsZS5hbmRyb2lkLm1hdGVyaWFsLnRhYnMuVGFiTGF5b3V0TWVkaWF0b3I7CgpwdWJsaWMgY2xhc3MgTW9kZUFjdGl2aXR5IGV4dGVuZHMgQXBwQ29tcGF0QWN0aXZpdHkgewoKICAgIHByaXZhdGUgVmlld1BhZ2VyMiB2aWV3UGFnZXI7CgogICAgQE92ZXJyaWRlCiAgICBwcm90ZWN0ZWQgdm9pZCBvbkNyZWF0ZShCdW5kbGUgc2F2ZWRJbnN0YW5jZVN0YXRlKSB7CiAgICAgICAgc3VwZXIub25DcmVhdGUoc2F2ZWRJbnN0YW5jZVN0YXRlKTsKICAgICAgICBzZXRDb250ZW50VmlldyhSLmxheW91dC5hY3Rpdml0eV9tb2RlKTsKCiAgICAgICAgaWYgKGdldFN1cHBvcnRBY3Rpb25CYXIoKSAhPSBudWxsKSB7CiAgICAgICAgICAgIGdldFN1cHBvcnRBY3Rpb25CYXIoKS5zZXREaXNwbGF5SG9tZUFzVXBFbmFibGVkKHRydWUpOwogICAgICAgIH0KCiAgICAgICAgVGFiTGF5b3V0IHRhYkxheW91dCA9IGZpbmRWaWV3QnlJZChSLmlkLnRhYkxheW91dCk7CiAgICAgICAgdmlld1BhZ2VyID0gZmluZFZpZXdCeUlkKFIuaWQudmlld1BhZ2VyKTsKICAgICAgICBCdXR0b24gYnRuU2V0TW9kZSA9IGZpbmRWaWV3QnlJZChSLmlkLmJ0blNldE1vZGUpOwoKICAgICAgICB2aWV3UGFnZXIuc2V0QWRhcHRlcihuZXcgVGFiUGFnZXJBZGFwdGVyKHRoaXMpKTsKCiAgICAgICAgbmV3IFRhYkxheW91dE1lZGlhdG9yKHRhYkxheW91dCwgdmlld1BhZ2VyLAogICAgICAgICAgICAodGFiLCBwb3NpdGlvbikgLT4gewogICAgICAgICAgICAgICAgU3RyaW5nW10gdGl0bGVzID0gewogICAgICAgICAgICAgICAgICAgIGdldFN0cmluZyhSLnN0cmluZy50YWJfZmlyc3QpLAogICAgICAgICAgICAgICAgICAgIGdldFN0cmluZyhSLnN0cmluZy50YWJfc2Vjb25kKSwKICAgICAgICAgICAgICAgICAgICBnZXRTdHJpbmcoUi5zdHJpbmcudGFiX3RoaXJkKQogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgICAgIHRhYi5zZXRUZXh0KHRpdGxlc1twb3NpdGlvbl0pOwogICAgICAgICAgICB9CiAgICAgICAgKS5hdHRhY2goKTsKCiAgICAgICAgZ2V0T25CYWNrUHJlc3NlZERpc3BhdGNoZXIoKS5hZGRDYWxsYmFjayh0aGlzLCBuZXcgT25CYWNrUHJlc3NlZENhbGxiYWNrKHRydWUpIHsKICAgICAgICAgICAgQE92ZXJyaWRlCiAgICAgICAgICAgIHB1YmxpYyB2b2lkIGhhbmRsZU9uQmFja1ByZXNzZWQoKSB7CiAgICAgICAgICAgICAgICBpZiAodmlld1BhZ2VyLmdldEN1cnJlbnRJdGVtKCkgPiAwKSB7CiAgICAgICAgICAgICAgICAgICAgdmlld1BhZ2VyLnNldEN1cnJlbnRJdGVtKDAsIHRydWUpOwogICAgICAgICAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgICAgICAgICBzZXRFbmFibGVkKGZhbHNlKTsKICAgICAgICAgICAgICAgICAgICBnZXRPbkJhY2tQcmVzc2VkRGlzcGF0Y2hlcigpLm9uQmFja1ByZXNzZWQoKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0pOwoKICAgICAgICBidG5TZXRNb2RlLnNldE9uQ2xpY2tMaXN0ZW5lcih0aGlzOjpzaG93UG9wdXBNZW51KTsKICAgIH0KCiAgICBwcml2YXRlIHZvaWQgc2hvd1BvcHVwTWVudShWaWV3IGFuY2hvcikgewogICAgICAgIFBvcHVwTWVudSBwb3B1cCA9IG5ldyBQb3B1cE1lbnUodGhpcywgYW5jaG9yKTsKICAgICAgICBwb3B1cC5nZXRNZW51SW5mbGF0ZXIoKS5pbmZsYXRlKFIubWVudS5wb3B1cF9tZW51LCBwb3B1cC5nZXRNZW51KCkpOwogICAgICAgIHBvcHVwLnNldE9uTWVudUl0ZW1DbGlja0xpc3RlbmVyKGl0ZW0gLT4gewogICAgICAgICAgICBpbnQgaWQgPSBpdGVtLmdldEl0ZW1JZCgpOwogICAgICAgICAgICBpZiAoaWQgPT0gUi5pZC5tZW51X2xpZ2h0KSB7CiAgICAgICAgICAgICAgICBBcHBDb21wYXREZWxlZ2F0ZS5zZXREZWZhdWx0TmlnaHRNb2RlKEFwcENvbXBhdERlbGVnYXRlLk1PREVfTklHSFRfTk8pOwogICAgICAgICAgICB9IGVsc2UgaWYgKGlkID09IFIuaWQubWVudV9uaWdodCkgewogICAgICAgICAgICAgICAgQXBwQ29tcGF0RGVsZWdhdGUuc2V0RGVmYXVsdE5pZ2h0TW9kZShBcHBDb21wYXREZWxlZ2F0ZS5NT0RFX05JR0hUX1lFUyk7CiAgICAgICAgICAgIH0gZWxzZSBpZiAoaWQgPT0gUi5pZC5tZW51X3N5c3RlbSkgewogICAgICAgICAgICAgICAgQXBwQ29tcGF0RGVsZWdhdGUuc2V0RGVmYXVsdE5pZ2h0TW9kZShBcHBDb21wYXREZWxlZ2F0ZS5NT0RFX05JR0hUX0ZPTExPV19TWVNURU0pOwogICAgICAgICAgICB9CiAgICAgICAgICAgIHJldHVybiB0cnVlOwogICAgICAgIH0pOwogICAgICAgIHBvcHVwLnNob3coKTsKICAgIH0KCiAgICBAT3ZlcnJpZGUKICAgIHB1YmxpYyBib29sZWFuIG9uT3B0aW9uc0l0ZW1TZWxlY3RlZChNZW51SXRlbSBpdGVtKSB7CiAgICAgICAgaWYgKGl0ZW0uZ2V0SXRlbUlkKCkgPT0gYW5kcm9pZC5SLmlkLmhvbWUpIHsKICAgICAgICAgICAgZmluaXNoKCk7CiAgICAgICAgICAgIHJldHVybiB0cnVlOwogICAgICAgIH0KICAgICAgICByZXR1cm4gc3VwZXIub25PcHRpb25zSXRlbVNlbGVjdGVkKGl0ZW0pOwogICAgfQp9Cg==' | base64 -d > salehjarghoun_130121038/app/src/main/java/com/exam/android2/ModeActivity.java
+
+      - name: Write TabPagerAdapter.java
+        run: |
+          echo 'cGFja2FnZSBjb20uZXhhbS5hbmRyb2lkMjsKCmltcG9ydCBhbmRyb2lkeC5hbm5vdGF0aW9uLk5vbk51bGw7CmltcG9ydCBhbmRyb2lkeC5mcmFnbWVudC5hcHAuRnJhZ21lbnQ7CmltcG9ydCBhbmRyb2lkeC5mcmFnbWVudC5hcHAuRnJhZ21lbnRBY3Rpdml0eTsKaW1wb3J0IGFuZHJvaWR4LnZpZXdwYWdlcjIuYWRhcHRlci5GcmFnbWVudFN0YXRlQWRhcHRlcjsKCnB1YmxpYyBjbGFzcyBUYWJQYWdlckFkYXB0ZXIgZXh0ZW5kcyBGcmFnbWVudFN0YXRlQWRhcHRlciB7CgogICAgcHVibGljIFRhYlBhZ2VyQWRhcHRlcihATm9uTnVsbCBGcmFnbWVudEFjdGl2aXR5IGFjdGl2aXR5KSB7CiAgICAgICAgc3VwZXIoYWN0aXZpdHkpOwogICAgfQoKICAgIEBOb25OdWxsCiAgICBAT3ZlcnJpZGUKICAgIHB1YmxpYyBGcmFnbWVudCBjcmVhdGVGcmFnbWVudChpbnQgcG9zaXRpb24pIHsKICAgICAgICBTdHJpbmdbXSB0aXRsZXMgPSB7IkZpcnN0IiwgIlNlY29uZCIsICJUaGlyZCJ9OwogICAgICAgIHJldHVybiBUYWJGcmFnbWVudC5uZXdJbnN0YW5jZSh0aXRsZXNbcG9zaXRpb25dKTsKICAgIH0KCiAgICBAT3ZlcnJpZGUKICAgIHB1YmxpYyBpbnQgZ2V0SXRlbUNvdW50KCkgeyByZXR1cm4gMzsgfQp9Cg==' | base64 -d > salehjarghoun_130121038/app/src/main/java/com/exam/android2/TabPagerAdapter.java
+
+      - name: Write TabFragment.java
+        run: |
+          echo 'cGFja2FnZSBjb20uZXhhbS5hbmRyb2lkMjsKCmltcG9ydCBhbmRyb2lkLm9zLkJ1bmRsZTsKaW1wb3J0IGFuZHJvaWQudmlldy5MYXlvdXRJbmZsYXRlcjsKaW1wb3J0IGFuZHJvaWQudmlldy5WaWV3OwppbXBvcnQgYW5kcm9pZC52aWV3LlZpZXdHcm91cDsKaW1wb3J0IGFuZHJvaWQud2lkZ2V0LlRleHRWaWV3OwppbXBvcnQgYW5kcm9pZHguYW5ub3RhdGlvbi5Ob25OdWxsOwppbXBvcnQgYW5kcm9pZHguYW5ub3RhdGlvbi5OdWxsYWJsZTsKaW1wb3J0IGFuZHJvaWR4LmZyYWdtZW50LmFwcC5GcmFnbWVudDsKCnB1YmxpYyBjbGFzcyBUYWJGcmFnbWVudCBleHRlbmRzIEZyYWdtZW50IHsKCiAgICBwcml2YXRlIHN0YXRpYyBmaW5hbCBTdHJpbmcgQVJHX1RJVExFID0gInRhYl90aXRsZSI7CgogICAgcHVibGljIHN0YXRpYyBUYWJGcmFnbWVudCBuZXdJbnN0YW5jZShTdHJpbmcgdGl0bGUpIHsKICAgICAgICBUYWJGcmFnbWVudCBmID0gbmV3IFRhYkZyYWdtZW50KCk7CiAgICAgICAgQnVuZGxlIGFyZ3MgPSBuZXcgQnVuZGxlKCk7CiAgICAgICAgYXJncy5wdXRTdHJpbmcoQVJHX1RJVExFLCB0aXRsZSk7CiAgICAgICAgZi5zZXRBcmd1bWVudHMoYXJncyk7CiAgICAgICAgcmV0dXJuIGY7CiAgICB9CgogICAgQE51bGxhYmxlCiAgICBAT3ZlcnJpZGUKICAgIHB1YmxpYyBWaWV3IG9uQ3JlYXRlVmlldyhATm9uTnVsbCBMYXlvdXRJbmZsYXRlciBpbmZsYXRlciwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBATnVsbGFibGUgVmlld0dyb3VwIGNvbnRhaW5lciwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBATnVsbGFibGUgQnVuZGxlIHNhdmVkSW5zdGFuY2VTdGF0ZSkgewogICAgICAgIFZpZXcgdmlldyA9IGluZmxhdGVyLmluZmxhdGUoUi5sYXlvdXQuZnJhZ21lbnRfdGFiLCBjb250YWluZXIsIGZhbHNlKTsKICAgICAgICBUZXh0VmlldyB0diA9IHZpZXcuZmluZFZpZXdCeUlkKFIuaWQudHZUYWJUaXRsZSk7CiAgICAgICAgaWYgKGdldEFyZ3VtZW50cygpICE9IG51bGwpIHsKICAgICAgICAgICAgdHYuc2V0VGV4dChnZXRBcmd1bWVudHMoKS5nZXRTdHJpbmcoQVJHX1RJVExFKSk7CiAgICAgICAgfQogICAgICAgIHJldHVybiB2aWV3OwogICAgfQp9Cg==' | base64 -d > salehjarghoun_130121038/app/src/main/java/com/exam/android2/TabFragment.java
+
+      - name: Create launcher icons
+        run: |
+          echo 'aW1wb3J0IHN0cnVjdCx6bGliCmRlZiBtYWtlX3BuZyhzaXplLHIsZyxiKToKICAgIGRlZiBjaHVuayhuYW1lLGRhdGEpOgogICAgICAgIGM9emxpYi5jcmMzMihuYW1lK2RhdGEpJjB4ZmZmZmZmZmYKICAgICAgICByZXR1cm4gc3RydWN0LnBhY2soIj5JIixsZW4oZGF0YSkpK25hbWUrZGF0YStzdHJ1Y3QucGFjaygiPkkiLGMpCiAgICBpaGRyPXN0cnVjdC5wYWNrKCI+SUlCQkJCQiIsc2l6ZSxzaXplLDgsMiwwLDAsMCkKICAgIHJhdz1iIiIuam9pbihiIlx4MDAiK2J5dGVzKFtyLGcsYl0qc2l6ZSkgZm9yIF8gaW4gcmFuZ2Uoc2l6ZSkpCiAgICBpZGF0PXpsaWIuY29tcHJlc3MocmF3KQogICAgcmV0dXJuIGIiXHg4OVBOR1xyXG5ceDFhXG4iK2NodW5rKGIiSUhEUiIsaWhkcikrY2h1bmsoYiJJREFUIixpZGF0KStjaHVuayhiIklFTkQiLGIiIikKc2l6ZXM9eyJtZHBpIjo0OCwiaGRwaSI6NzIsInhoZHBpIjo5NiwieHhoZHBpIjoxNDQsInh4eGhkcGkiOjE5Mn0KZm9yIGRlbnNpdHksc3ogaW4gc2l6ZXMuaXRlbXMoKToKICAgIGRhdGE9bWFrZV9wbmcoc3osMTAzLDU4LDE4MykKICAgIGZvciBuYW1lIGluIFsiaWNfbGF1bmNoZXIucG5nIiwiaWNfbGF1bmNoZXJfcm91bmQucG5nIl06CiAgICAgICAgd2l0aCBvcGVuKGYic2FsZWhqYXJnaG91bl8xMzAxMjEwMzgvYXBwL3NyYy9tYWluL3Jlcy9taXBtYXAte2RlbnNpdHl9L3tuYW1lfSIsIndiIikgYXMgZjoKICAgICAgICAgICAgZi53cml0ZShkYXRhKQpwcmludCgiSWNvbnMgT0siKQo=' | base64 -d | python3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.4'
 
-      - name: Generate Gradle Wrapper inside project
-        working-directory: salehjarghoun_130121038
+      - name: Generate Gradle Wrapper
         run: |
+          cd salehjarghoun_130121038
           gradle wrapper --gradle-version 8.4 --distribution-type bin
           chmod +x gradlew
 
-      # ─── Build the debug APK ───────────────────────────────────────────────────
       - name: Build Debug APK
-        working-directory: salehjarghoun_130121038
-        run: ./gradlew assembleDebug --stacktrace
+        run: |
+          cd salehjarghoun_130121038
+          ./gradlew assembleDebug --stacktrace
 
-      # ─── Upload APK as artifact ────────────────────────────────────────────────
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: salehjarghoun_130121038-debug-apk
           path: salehjarghoun_130121038/app/build/outputs/apk/debug/app-debug.apk
 
-      # ─── Commit generated project files back to repo ─────────────────────────
       - name: Commit project files to repo
         run: |
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add salehjarghoun_130121038/
-          git diff --cached --quiet || git commit -m "chore: generate project files for salehjarghoun_130121038"
+          git diff --cached --quiet || git commit -m "chore: add project files for salehjarghoun_130121038"
           git push
+
