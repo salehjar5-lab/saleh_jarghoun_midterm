@@ -1,8 +1,8 @@
-name: Build Android APK - saleh_jarghoun_1301215038
+name: Build Android Exam Project
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -20,26 +19,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create project directories
+      - name: Create project folder structure
         run: |
-          mkdir -p app/src/main/java/com/saleh/exam2
-          mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/menu
-          mkdir -p app/src/main/res/values
-          mkdir -p app/src/main/res/drawable
-          mkdir -p app/src/main/res/mipmap-anydpi-v26
-          mkdir -p app/src/main/res/mipmap-mdpi
-          mkdir -p app/src/main/res/mipmap-hdpi
-          mkdir -p app/src/main/res/mipmap-xhdpi
-          mkdir -p app/src/main/res/mipmap-xxhdpi
-          mkdir -p app/src/main/res/mipmap-xxxhdpi
-          mkdir -p app/src/test/java/com/saleh/exam2
-          mkdir -p app/src/androidTest/java/com/saleh/exam2
-          mkdir -p gradle/wrapper
+          mkdir -p salehjarghoun_130121038/app/src/main/java/com/exam/android2
+          mkdir -p salehjarghoun_130121038/app/src/main/res/layout
+          mkdir -p salehjarghoun_130121038/app/src/main/res/menu
+          mkdir -p salehjarghoun_130121038/app/src/main/res/values
+          mkdir -p salehjarghoun_130121038/app/src/main/res/drawable
+          mkdir -p salehjarghoun_130121038/gradle/wrapper
 
-      - name: Write settings.gradle
+      # ─── settings.gradle ───────────────────────────────────────────────────────
+      - name: Create settings.gradle
         run: |
-          cat > settings.gradle << 'EOF'
+          cat > salehjarghoun_130121038/settings.gradle << 'SETTINGS'
           pluginManagement {
               repositories {
                   google()
@@ -54,118 +46,123 @@ jobs:
                   mavenCentral()
               }
           }
-          rootProject.name = "saleh_jarghoun_1301215038"
+          rootProject.name = "Android2Exam"
           include ':app'
-          EOF
+          SETTINGS
 
-      - name: Write root build.gradle
+      # ─── Root build.gradle ─────────────────────────────────────────────────────
+      - name: Create root build.gradle
         run: |
-          cat > build.gradle << 'EOF'
+          cat > salehjarghoun_130121038/build.gradle << 'ROOTGRADLE'
           plugins {
               id 'com.android.application' version '8.2.2' apply false
           }
-          EOF
+          ROOTGRADLE
 
-      - name: Write gradle.properties
+      # ─── gradle-wrapper.properties ─────────────────────────────────────────────
+      - name: Create gradle-wrapper.properties
         run: |
-          cat > gradle.properties << 'EOF'
-          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-          android.useAndroidX=true
-          android.enableJetifier=true
-          EOF
+          cat > salehjarghoun_130121038/gradle/wrapper/gradle-wrapper.properties << 'WRAPPER'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          WRAPPER
 
-      - name: Write app/build.gradle
+      # ─── gradlew wrapper jar ───────────────────────────────────────────────────
+      - name: Download Gradle wrapper
+        working-directory: salehjarghoun_130121038
         run: |
-          cat > app/build.gradle << 'EOF'
+          curl -sL https://raw.githubusercontent.com/gradle/gradle/v8.4.0/gradle/wrapper/gradle-wrapper.jar \
+            -o gradle/wrapper/gradle-wrapper.jar || true
+          curl -sL https://raw.githubusercontent.com/gradle/gradle/master/gradlew \
+            -o gradlew 2>/dev/null || \
+          curl -sL https://raw.githubusercontent.com/android/nowinandroid/main/gradlew \
+            -o gradlew 2>/dev/null || true
+          chmod +x gradlew 2>/dev/null || true
+
+      # ─── app/build.gradle ──────────────────────────────────────────────────────
+      - name: Create app/build.gradle
+        run: |
+          cat > salehjarghoun_130121038/app/build.gradle << 'APPGRADLE'
           plugins {
               id 'com.android.application'
           }
+
           android {
-              namespace 'com.saleh.exam2'
+              namespace 'com.exam.android2'
               compileSdk 34
+
               defaultConfig {
-                  applicationId "com.saleh.exam2"
+                  applicationId "com.exam.android2"
                   minSdk 24
                   targetSdk 34
                   versionCode 1
                   versionName "1.0"
-                  testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
               }
+
               buildTypes {
                   release {
                       minifyEnabled false
                       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-                      signingConfig signingConfigs.debug
+                  }
+                  debug {
+                      debuggable true
                   }
               }
+
               compileOptions {
-                  sourceCompatibility JavaVersion.VERSION_1_8
-                  targetCompatibility JavaVersion.VERSION_1_8
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+
+              buildFeatures {
+                  viewBinding true
               }
           }
+
           dependencies {
-              implementation 'androidx.appcompat:appcompat:1.6.1'
-              implementation 'com.google.android.material:material:1.11.0'
+              implementation 'androidx.appcompat:appcompat:1.7.0'
+              implementation 'com.google.android.material:material:1.12.0'
               implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-              implementation 'androidx.viewpager2:viewpager2:1.0.0'
-              implementation 'androidx.activity:activity:1.7.2'
-              testImplementation 'junit:junit:4.13.2'
-              androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-              androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+              implementation 'androidx.viewpager2:viewpager2:1.1.0'
+              implementation 'androidx.fragment:fragment:1.8.3'
           }
-          EOF
+          APPGRADLE
 
-      - name: Write proguard-rules.pro
-        run: echo "# Add project specific ProGuard rules here." > app/proguard-rules.pro
-
-      - name: Write gradle-wrapper.properties
+      # ─── proguard-rules.pro ────────────────────────────────────────────────────
+      - name: Create proguard-rules.pro
         run: |
-          cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-bin.zip
-          networkTimeout=10000
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          EOF
+          cat > salehjarghoun_130121038/app/proguard-rules.pro << 'PRO'
+          # Default proguard rules
+          -keepattributes *Annotation*
+          PRO
 
-      - name: Download gradle wrapper jar
+      # ─── AndroidManifest.xml ───────────────────────────────────────────────────
+      - name: Create AndroidManifest.xml
         run: |
-          curl -fsSL "https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar" \
-            -o gradle/wrapper/gradle-wrapper.jar
-          echo "Wrapper jar: $(wc -c < gradle/wrapper/gradle-wrapper.jar) bytes"
-
-      - name: Write gradlew
-        run: |
-          cat > gradlew << 'EOF'
-          #!/bin/sh
-          APP_HOME="$(cd "$(dirname "$0")" && pwd)"
-          exec java -classpath "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
-            org.gradle.wrapper.GradleWrapperMain "$@"
-          EOF
-          chmod +x gradlew
-
-      - name: Write AndroidManifest.xml
-        run: |
-          cat > app/src/main/AndroidManifest.xml << 'EOF'
+          cat > salehjarghoun_130121038/app/src/main/AndroidManifest.xml << 'MANIFEST'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
               <application
                   android:allowBackup="true"
                   android:icon="@mipmap/ic_launcher"
                   android:label="@string/app_name"
                   android:roundIcon="@mipmap/ic_launcher_round"
                   android:supportsRtl="true"
-                  android:theme="@style/Theme.Exam2">
+                  android:theme="@style/Theme.Android2Exam">
+
                   <activity
                       android:name=".MainActivity"
-                      android:exported="true"
-                      android:windowSoftInputMode="adjustResize">
+                      android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
                       </intent-filter>
                   </activity>
+
                   <activity
                       android:name=".ModeActivity"
                       android:exported="false"
@@ -174,334 +171,54 @@ jobs:
                           android:name="android.support.PARENT_ACTIVITY"
                           android:value=".MainActivity" />
                   </activity>
+
               </application>
           </manifest>
-          EOF
+          MANIFEST
 
-      - name: Write MainActivity.java
+      # ─── strings.xml ───────────────────────────────────────────────────────────
+      - name: Create strings.xml
         run: |
-          cat > app/src/main/java/com/saleh/exam2/MainActivity.java << 'EOF'
-          package com.saleh.exam2;
-
-          import android.content.Intent;
-          import android.os.Bundle;
-          import android.os.Handler;
-          import android.os.Looper;
-          import android.text.Editable;
-          import android.text.TextWatcher;
-          import android.util.Patterns;
-          import android.widget.Button;
-          import android.widget.EditText;
-
-          import androidx.activity.OnBackPressedCallback;
-          import androidx.appcompat.app.AppCompatActivity;
-
-          import com.google.android.material.snackbar.Snackbar;
-
-          public class MainActivity extends AppCompatActivity {
-
-              private EditText etEmail, etPassword;
-              private Button btnLogin;
-              private boolean backPressedOnce = false;
-              private final Handler handler = new Handler(Looper.getMainLooper());
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-                  setContentView(R.layout.activity_main);
-
-                  etEmail    = findViewById(R.id.etEmail);
-                  etPassword = findViewById(R.id.etPassword);
-                  btnLogin   = findViewById(R.id.btnLogin);
-                  btnLogin.setEnabled(false);
-
-                  // TextWatcher - enable login only when email valid and password >= 6 chars
-                  TextWatcher watcher = new TextWatcher() {
-                      @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
-                      @Override public void onTextChanged(CharSequence s, int st, int b, int c) {}
-                      @Override
-                      public void afterTextChanged(Editable s) {
-                          String email    = etEmail.getText().toString().trim();
-                          String password = etPassword.getText().toString();
-                          btnLogin.setEnabled(
-                              Patterns.EMAIL_ADDRESS.matcher(email).matches()
-                              && password.length() >= 6
-                          );
-                      }
-                  };
-                  etEmail.addTextChangedListener(watcher);
-                  etPassword.addTextChangedListener(watcher);
-
-                  // Login button -> go to ModeActivity
-                  btnLogin.setOnClickListener(v -> {
-                      Intent intent = new Intent(MainActivity.this, ModeActivity.class);
-                      startActivity(intent);
-                  });
-
-                  // Double back press to exit
-                  getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-                      @Override
-                      public void handleOnBackPressed() {
-                          if (backPressedOnce) {
-                              finish();
-                              return;
-                          }
-                          backPressedOnce = true;
-                          Snackbar.make(
-                              findViewById(android.R.id.content),
-                              "Press back again to exit",
-                              Snackbar.LENGTH_SHORT
-                          ).show();
-                          handler.postDelayed(() -> backPressedOnce = false, 2000);
-                      }
-                  });
-              }
-          }
-          EOF
-
-      - name: Write ModeActivity.java
-        run: |
-          cat > app/src/main/java/com/saleh/exam2/ModeActivity.java << 'EOF'
-          package com.saleh.exam2;
-
-          import android.os.Bundle;
-          import android.view.MenuItem;
-          import android.widget.Button;
-          import android.widget.PopupMenu;
-
-          import androidx.activity.OnBackPressedCallback;
-          import androidx.appcompat.app.AppCompatActivity;
-          import androidx.appcompat.app.AppCompatDelegate;
-          import androidx.appcompat.widget.Toolbar;
-          import androidx.viewpager2.widget.ViewPager2;
-
-          import com.google.android.material.tabs.TabLayout;
-          import com.google.android.material.tabs.TabLayoutMediator;
-
-          public class ModeActivity extends AppCompatActivity {
-
-              private ViewPager2 viewPager;
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-                  setContentView(R.layout.activity_mode);
-
-                  // Toolbar setup - NoActionBar theme lets us use custom toolbar
-                  Toolbar toolbar = findViewById(R.id.toolbar);
-                  setSupportActionBar(toolbar);
-                  if (getSupportActionBar() != null) {
-                      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                      getSupportActionBar().setTitle("Mode Activity");
-                  }
-
-                  // ViewPager2 + TabLayout
-                  viewPager = findViewById(R.id.viewPager);
-                  TabLayout tabLayout = findViewById(R.id.tabLayout);
-                  viewPager.setAdapter(new TabPagerAdapter(this));
-
-                  new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-                      switch (position) {
-                          case 0: tab.setText("First");  break;
-                          case 1: tab.setText("Second"); break;
-                          case 2: tab.setText("Third");  break;
-                      }
-                  }).attach();
-
-                  // Set Mode popup menu
-                  Button btnSetMode = findViewById(R.id.btnSetMode);
-                  btnSetMode.setOnClickListener(v -> {
-                      PopupMenu popup = new PopupMenu(ModeActivity.this, v);
-                      popup.getMenuInflater().inflate(R.menu.menu_mode, popup.getMenu());
-                      popup.setOnMenuItemClickListener(item -> {
-                          int id = item.getItemId();
-                          if (id == R.id.mode_light) {
-                              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                              return true;
-                          } else if (id == R.id.mode_night) {
-                              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                              return true;
-                          } else if (id == R.id.mode_system) {
-                              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                              return true;
-                          }
-                          return false;
-                      });
-                      popup.show();
-                  });
-
-                  // Back press: if not on first tab go to first tab, else go back to MainActivity
-                  getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-                      @Override
-                      public void handleOnBackPressed() {
-                          if (viewPager.getCurrentItem() > 0) {
-                              viewPager.setCurrentItem(0, true);
-                          } else {
-                              finish();
-                          }
-                      }
-                  });
-              }
-
-              // Up button (ancestral navigation) goes back to MainActivity
-              @Override
-              public boolean onOptionsItemSelected(MenuItem item) {
-                  if (item.getItemId() == android.R.id.home) {
-                      finish();
-                      return true;
-                  }
-                  return super.onOptionsItemSelected(item);
-              }
-          }
-          EOF
-
-      - name: Write TabPagerAdapter.java
-        run: |
-          cat > app/src/main/java/com/saleh/exam2/TabPagerAdapter.java << 'EOF'
-          package com.saleh.exam2;
-          import androidx.annotation.NonNull;
-          import androidx.fragment.app.Fragment;
-          import androidx.fragment.app.FragmentActivity;
-          import androidx.viewpager2.adapter.FragmentStateAdapter;
-          public class TabPagerAdapter extends FragmentStateAdapter {
-              public TabPagerAdapter(@NonNull FragmentActivity fa) { super(fa); }
-              @NonNull @Override public Fragment createFragment(int pos) { return TabFragment.newInstance(pos); }
-              @Override public int getItemCount() { return 3; }
-          }
-          EOF
-
-      - name: Write TabFragment.java
-        run: |
-          cat > app/src/main/java/com/saleh/exam2/TabFragment.java << 'EOF'
-          package com.saleh.exam2;
-          import android.os.Bundle;
-          import android.view.LayoutInflater;
-          import android.view.View;
-          import android.view.ViewGroup;
-          import android.widget.TextView;
-          import androidx.annotation.NonNull;
-          import androidx.annotation.Nullable;
-          import androidx.fragment.app.Fragment;
-          public class TabFragment extends Fragment {
-              private int position;
-              public static TabFragment newInstance(int pos) {
-                  TabFragment f = new TabFragment();
-                  Bundle b = new Bundle(); b.putInt("pos", pos);
-                  f.setArguments(b); return f;
-              }
-              @Override public void onCreate(@Nullable Bundle s) {
-                  super.onCreate(s); if (getArguments() != null) position = getArguments().getInt("pos");
-              }
-              @Nullable @Override public View onCreateView(@NonNull LayoutInflater li, @Nullable ViewGroup vg, @Nullable Bundle s) {
-                  View v = li.inflate(R.layout.fragment_tab, vg, false);
-                  TextView tv = v.findViewById(R.id.tvTabTitle);
-                  String[] titles = {"First Tab Content", "Second Tab Content", "Third Tab Content"};
-                  tv.setText(titles[position]); return v;
-              }
-          }
-          EOF
-
-      - name: Write activity_main.xml
-        run: |
-          cat > app/src/main/res/layout/activity_main.xml << 'EOF'
+          cat > salehjarghoun_130121038/app/src/main/res/values/strings.xml << 'STRINGS'
           <?xml version="1.0" encoding="utf-8"?>
-          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:padding="24dp"
-              android:gravity="center">
-              <EditText
-                  android:id="@+id/etEmail"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:hint="Email"
-                  android:inputType="textEmailAddress"
-                  android:layout_marginBottom="16dp"/>
-              <EditText
-                  android:id="@+id/etPassword"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:hint="Password"
-                  android:inputType="textPassword"
-                  android:layout_marginBottom="24dp"/>
-              <Button
-                  android:id="@+id/btnLogin"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:text="Login"/>
-          </LinearLayout>
-          EOF
+          <resources>
+              <string name="app_name">Android2Exam</string>
+              <string name="hint_email">Email</string>
+              <string name="hint_password">Password</string>
+              <string name="btn_login">Login</string>
+              <string name="btn_set_mode">Set Mode</string>
+              <string name="tab_first">First</string>
+              <string name="tab_second">Second</string>
+              <string name="tab_third">Third</string>
+              <string name="snack_back">Press back again to exit</string>
+              <string name="mode_light">Light</string>
+              <string name="mode_night">Night</string>
+              <string name="mode_system">System</string>
+          </resources>
+          STRINGS
 
-      - name: Write activity_mode.xml
+      # ─── themes.xml ────────────────────────────────────────────────────────────
+      - name: Create themes.xml
         run: |
-          cat > app/src/main/res/layout/activity_mode.xml << 'EOF'
+          cat > salehjarghoun_130121038/app/src/main/res/values/themes.xml << 'THEMES'
           <?xml version="1.0" encoding="utf-8"?>
-          <androidx.constraintlayout.widget.ConstraintLayout
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-              <androidx.appcompat.widget.Toolbar
-                  android:id="@+id/toolbar"
-                  android:layout_width="match_parent"
-                  android:layout_height="?attr/actionBarSize"
-                  android:background="?attr/colorPrimary"
-                  app:layout_constraintTop_toTopOf="parent"
-                  app:titleTextColor="@android:color/white"/>
-              <com.google.android.material.tabs.TabLayout
-                  android:id="@+id/tabLayout"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  app:layout_constraintTop_toBottomOf="@id/toolbar"/>
-              <androidx.viewpager2.widget.ViewPager2
-                  android:id="@+id/viewPager"
-                  android:layout_width="match_parent"
-                  android:layout_height="0dp"
-                  app:layout_constraintTop_toBottomOf="@id/tabLayout"
-                  app:layout_constraintBottom_toTopOf="@id/btnSetMode"/>
-              <Button
-                  android:id="@+id/btnSetMode"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:text="Set Mode"
-                  android:layout_margin="16dp"
-                  app:layout_constraintBottom_toBottomOf="parent"/>
-          </androidx.constraintlayout.widget.ConstraintLayout>
-          EOF
+          <resources>
+              <style name="Theme.Android2Exam" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+                  <item name="colorPrimary">@color/purple_500</item>
+                  <item name="colorPrimaryVariant">@color/purple_700</item>
+                  <item name="colorOnPrimary">@color/white</item>
+                  <item name="colorSecondary">@color/teal_200</item>
+                  <item name="colorSecondaryVariant">@color/teal_700</item>
+                  <item name="colorOnSecondary">@color/black</item>
+                  <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+              </style>
+          </resources>
+          THEMES
 
-      - name: Write fragment_tab.xml
+      # ─── colors.xml ────────────────────────────────────────────────────────────
+      - name: Create colors.xml
         run: |
-          cat > app/src/main/res/layout/fragment_tab.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:gravity="center"
-              android:orientation="vertical">
-              <TextView
-                  android:id="@+id/tvTabTitle"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:textSize="22sp"
-                  android:textStyle="bold"/>
-          </LinearLayout>
-          EOF
-
-      - name: Write menu_mode.xml
-        run: |
-          cat > app/src/main/res/menu/menu_mode.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <menu xmlns:android="http://schemas.android.com/apk/res/android">
-              <item android:id="@+id/mode_light"  android:title="Light"  />
-              <item android:id="@+id/mode_night"  android:title="Night"  />
-              <item android:id="@+id/mode_system" android:title="System" />
-          </menu>
-          EOF
-
-      - name: Write colors.xml
-        run: |
-          cat > app/src/main/res/values/colors.xml << 'EOF'
+          cat > salehjarghoun_130121038/app/src/main/res/values/colors.xml << 'COLORS'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <color name="purple_200">#FFBB86FC</color>
@@ -512,114 +229,439 @@ jobs:
               <color name="black">#FF000000</color>
               <color name="white">#FFFFFFFF</color>
           </resources>
-          EOF
+          COLORS
 
-      - name: Write strings.xml
+      # ─── popup_menu.xml ────────────────────────────────────────────────────────
+      - name: Create popup_menu.xml
         run: |
-          cat > app/src/main/res/values/strings.xml << 'EOF'
+          cat > salehjarghoun_130121038/app/src/main/res/menu/popup_menu.xml << 'MENU'
           <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <string name="app_name">saleh_jarghoun_1301215038</string>
-          </resources>
-          EOF
+          <menu xmlns:android="http://schemas.android.com/apk/res/android">
+              <item
+                  android:id="@+id/menu_light"
+                  android:title="@string/mode_light" />
+              <item
+                  android:id="@+id/menu_night"
+                  android:title="@string/mode_night" />
+              <item
+                  android:id="@+id/menu_system"
+                  android:title="@string/mode_system" />
+          </menu>
+          MENU
 
-      - name: Write themes.xml
+      # ─── activity_main.xml ─────────────────────────────────────────────────────
+      - name: Create activity_main.xml
         run: |
-          cat > app/src/main/res/values/themes.xml << 'EOF'
+          cat > salehjarghoun_130121038/app/src/main/res/layout/activity_main.xml << 'MAINLAYOUT'
           <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <style name="Theme.Exam2" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-                  <item name="colorPrimary">@color/purple_500</item>
-                  <item name="colorPrimaryVariant">@color/purple_700</item>
-                  <item name="colorOnPrimary">@color/white</item>
-                  <item name="colorSecondary">@color/teal_200</item>
-                  <item name="colorSecondaryVariant">@color/teal_700</item>
-                  <item name="colorOnSecondary">@color/black</item>
-                  <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-              </style>
-          </resources>
-          EOF
+          <LinearLayout
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:gravity="center"
+              android:padding="32dp">
 
-      - name: Write adaptive icon XMLs
+              <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="Android 2 – Exam"
+                  android:textSize="22sp"
+                  android:textStyle="bold"
+                  android:layout_marginBottom="32dp" />
+
+              <EditText
+                  android:id="@+id/etEmail"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:hint="@string/hint_email"
+                  android:inputType="textEmailAddress"
+                  android:layout_marginBottom="16dp" />
+
+              <EditText
+                  android:id="@+id/etPassword"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:hint="@string/hint_password"
+                  android:inputType="textPassword"
+                  android:layout_marginBottom="24dp" />
+
+              <Button
+                  android:id="@+id/btnLogin"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="@string/btn_login"
+                  android:enabled="false" />
+
+          </LinearLayout>
+          MAINLAYOUT
+
+      # ─── activity_mode.xml ─────────────────────────────────────────────────────
+      - name: Create activity_mode.xml
         run: |
-          cat > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml << 'EOF'
+          cat > salehjarghoun_130121038/app/src/main/res/layout/activity_mode.xml << 'MODELAYOUT'
           <?xml version="1.0" encoding="utf-8"?>
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-              <background android:drawable="@color/purple_500"/>
-              <foreground android:drawable="@color/white"/>
-          </adaptive-icon>
-          EOF
-          cp app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml \
-             app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          <LinearLayout
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
-      - name: Generate PNG launcher icons
-        run: |
-          python3 - << 'PYEOF'
-          import struct, zlib
-          def make_png(size, r, g, b):
-              def chunk(name, data):
-                  crc = zlib.crc32(name + data) & 0xffffffff
-                  return struct.pack('>I', len(data)) + name + data + struct.pack('>I', crc)
-              ihdr = struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0)
-              raw = b''.join(b'\x00' + bytes([r, g, b] * size) for _ in range(size))
-              return (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', ihdr)
-                      + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b''))
-          base = 'app/src/main/res'
-          for dpi, sz in [('mdpi',48),('hdpi',72),('xhdpi',96),('xxhdpi',144),('xxxhdpi',192)]:
-              png = make_png(sz, 98, 0, 238)
-              for name in ('ic_launcher','ic_launcher_round'):
-                  open(f'{base}/mipmap-{dpi}/{name}.png','wb').write(png)
-          print("Icons OK")
-          PYEOF
+              <com.google.android.material.tabs.TabLayout
+                  android:id="@+id/tabLayout"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  app:tabGravity="fill"
+                  app:tabMode="fixed" />
 
-      - name: Write test files
+              <androidx.viewpager2.widget.ViewPager2
+                  android:id="@+id/viewPager"
+                  android:layout_width="match_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="1" />
+
+              <Button
+                  android:id="@+id/btnSetMode"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:layout_margin="16dp"
+                  android:text="@string/btn_set_mode" />
+
+          </LinearLayout>
+          MODELAYOUT
+
+      # ─── fragment_tab.xml ──────────────────────────────────────────────────────
+      - name: Create fragment_tab.xml
         run: |
-          cat > app/src/test/java/com/saleh/exam2/ExampleUnitTest.java << 'EOF'
-          package com.saleh.exam2;
-          import org.junit.Test;
-          import static org.junit.Assert.*;
-          public class ExampleUnitTest {
-              @Test
-              public void addition_isCorrect() { assertEquals(4, 2 + 2); }
-          }
-          EOF
-          cat > app/src/androidTest/java/com/saleh/exam2/ExampleInstrumentedTest.java << 'EOF'
-          package com.saleh.exam2;
-          import android.content.Context;
-          import androidx.test.platform.app.InstrumentationRegistry;
-          import androidx.test.ext.junit.runners.AndroidJUnit4;
-          import org.junit.Test;
-          import org.junit.runner.RunWith;
-          import static org.junit.Assert.*;
-          @RunWith(AndroidJUnit4.class)
-          public class ExampleInstrumentedTest {
-              @Test
-              public void useAppContext() {
-                  Context ctx = InstrumentationRegistry.getInstrumentation().getTargetContext();
-                  assertEquals("com.saleh.exam2", ctx.getPackageName());
+          cat > salehjarghoun_130121038/app/src/main/res/layout/fragment_tab.xml << 'TABLAYOUT'
+          <?xml version="1.0" encoding="utf-8"?>
+          <LinearLayout
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
+
+              <TextView
+                  android:id="@+id/tvTabTitle"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textSize="24sp"
+                  android:textStyle="bold" />
+
+          </LinearLayout>
+          TABLAYOUT
+
+      # ─── MainActivity.java ─────────────────────────────────────────────────────
+      - name: Create MainActivity.java
+        run: |
+          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/MainActivity.java << 'MAINACTIVITY'
+          package com.exam.android2;
+
+          import android.content.Intent;
+          import android.os.Bundle;
+          import android.text.Editable;
+          import android.text.TextWatcher;
+          import android.util.Patterns;
+          import android.view.View;
+          import android.widget.Button;
+          import android.widget.EditText;
+          import androidx.appcompat.app.AppCompatActivity;
+          import com.google.android.material.snackbar.Snackbar;
+
+          public class MainActivity extends AppCompatActivity {
+
+              private EditText etEmail, etPassword;
+              private Button btnLogin;
+              private boolean backPressedOnce = false;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  setContentView(R.layout.activity_main);
+
+                  etEmail    = findViewById(R.id.etEmail);
+                  etPassword = findViewById(R.id.etPassword);
+                  btnLogin   = findViewById(R.id.btnLogin);
+
+                  TextWatcher watcher = new TextWatcher() {
+                      @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+                      @Override public void onTextChanged(CharSequence s, int st, int b, int c) {}
+                      @Override
+                      public void afterTextChanged(Editable s) {
+                          String email    = etEmail.getText().toString().trim();
+                          String password = etPassword.getText().toString();
+                          boolean emailOk = Patterns.EMAIL_ADDRESS.matcher(email).matches();
+                          boolean passOk  = password.length() >= 6;
+                          btnLogin.setEnabled(emailOk && passOk);
+                      }
+                  };
+
+                  etEmail.addTextChangedListener(watcher);
+                  etPassword.addTextChangedListener(watcher);
+
+                  btnLogin.setOnClickListener(v -> {
+                      Intent intent = new Intent(MainActivity.this, ModeActivity.class);
+                      startActivity(intent);
+                  });
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (backPressedOnce) {
+                      super.onBackPressed();
+                      return;
+                  }
+                  backPressedOnce = true;
+                  View root = findViewById(android.R.id.content);
+                  Snackbar.make(root, getString(R.string.snack_back), Snackbar.LENGTH_SHORT).show();
+                  new android.os.Handler().postDelayed(() -> backPressedOnce = false, 2000);
               }
           }
-          EOF
+          MAINACTIVITY
 
+      # ─── ModeActivity.java ─────────────────────────────────────────────────────
+      - name: Create ModeActivity.java
+        run: |
+          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/ModeActivity.java << 'MODEACTIVITY'
+          package com.exam.android2;
+
+          import android.os.Bundle;
+          import android.view.MenuItem;
+          import android.view.View;
+          import android.widget.Button;
+          import android.widget.PopupMenu;
+          import androidx.activity.OnBackPressedCallback;
+          import androidx.appcompat.app.AppCompatActivity;
+          import androidx.appcompat.app.AppCompatDelegate;
+          import androidx.viewpager2.widget.ViewPager2;
+          import com.google.android.material.tabs.TabLayout;
+          import com.google.android.material.tabs.TabLayoutMediator;
+
+          public class ModeActivity extends AppCompatActivity {
+
+              private ViewPager2 viewPager;
+              private TabLayout tabLayout;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  setContentView(R.layout.activity_mode);
+
+                  // Enable Up / Ancestral Navigation button
+                  if (getSupportActionBar() != null) {
+                      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                  }
+
+                  tabLayout = findViewById(R.id.tabLayout);
+                  viewPager = findViewById(R.id.viewPager);
+                  Button btnSetMode = findViewById(R.id.btnSetMode);
+
+                  // Set up ViewPager2 with adapter
+                  TabPagerAdapter adapter = new TabPagerAdapter(this);
+                  viewPager.setAdapter(adapter);
+
+                  // Attach TabLayout to ViewPager2
+                  String[] tabTitles = {
+                      getString(R.string.tab_first),
+                      getString(R.string.tab_second),
+                      getString(R.string.tab_third)
+                  };
+                  new TabLayoutMediator(tabLayout, viewPager,
+                      (tab, position) -> tab.setText(tabTitles[position])
+                  ).attach();
+
+                  // Custom back-press: from tab 1 or 2 → go to tab 0; from tab 0 → go back
+                  getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                      @Override
+                      public void handleOnBackPressed() {
+                          int current = viewPager.getCurrentItem();
+                          if (current > 0) {
+                              viewPager.setCurrentItem(0, true);
+                          } else {
+                              setEnabled(false);
+                              getOnBackPressedDispatcher().onBackPressed();
+                          }
+                      }
+                  });
+
+                  // PopupMenu for Set Mode button
+                  btnSetMode.setOnClickListener(v -> showPopupMenu(v));
+              }
+
+              private void showPopupMenu(View anchor) {
+                  PopupMenu popup = new PopupMenu(this, anchor);
+                  popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+                  popup.setOnMenuItemClickListener(item -> {
+                      int id = item.getItemId();
+                      if (id == R.id.menu_light) {
+                          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                          return true;
+                      } else if (id == R.id.menu_night) {
+                          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                          return true;
+                      } else if (id == R.id.menu_system) {
+                          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                          return true;
+                      }
+                      return false;
+                  });
+                  popup.show();
+              }
+
+              // Handle Ancestral Navigation (Up button in ActionBar)
+              @Override
+              public boolean onOptionsItemSelected(MenuItem item) {
+                  if (item.getItemId() == android.R.id.home) {
+                      finish();  // navigates back to MainActivity (parent)
+                      return true;
+                  }
+                  return super.onOptionsItemSelected(item);
+              }
+          }
+          MODEACTIVITY
+
+      # ─── TabPagerAdapter.java ──────────────────────────────────────────────────
+      - name: Create TabPagerAdapter.java
+        run: |
+          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/TabPagerAdapter.java << 'ADAPTER'
+          package com.exam.android2;
+
+          import androidx.annotation.NonNull;
+          import androidx.fragment.app.Fragment;
+          import androidx.fragment.app.FragmentActivity;
+          import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+          public class TabPagerAdapter extends FragmentStateAdapter {
+
+              private static final int TAB_COUNT = 3;
+
+              public TabPagerAdapter(@NonNull FragmentActivity activity) {
+                  super(activity);
+              }
+
+              @NonNull
+              @Override
+              public Fragment createFragment(int position) {
+                  String[] titles = {"First", "Second", "Third"};
+                  return TabFragment.newInstance(titles[position]);
+              }
+
+              @Override
+              public int getItemCount() {
+                  return TAB_COUNT;
+              }
+          }
+          ADAPTER
+
+      # ─── TabFragment.java ──────────────────────────────────────────────────────
+      - name: Create TabFragment.java
+        run: |
+          cat > salehjarghoun_130121038/app/src/main/java/com/exam/android2/TabFragment.java << 'TABFRAGMENT'
+          package com.exam.android2;
+
+          import android.os.Bundle;
+          import android.view.LayoutInflater;
+          import android.view.View;
+          import android.view.ViewGroup;
+          import android.widget.TextView;
+          import androidx.annotation.NonNull;
+          import androidx.annotation.Nullable;
+          import androidx.fragment.app.Fragment;
+
+          public class TabFragment extends Fragment {
+
+              private static final String ARG_TITLE = "tab_title";
+
+              public static TabFragment newInstance(String title) {
+                  TabFragment fragment = new TabFragment();
+                  Bundle args = new Bundle();
+                  args.putString(ARG_TITLE, title);
+                  fragment.setArguments(args);
+                  return fragment;
+              }
+
+              @Nullable
+              @Override
+              public View onCreateView(@NonNull LayoutInflater inflater,
+                                       @Nullable ViewGroup container,
+                                       @Nullable Bundle savedInstanceState) {
+                  View view = inflater.inflate(R.layout.fragment_tab, container, false);
+                  TextView tv = view.findViewById(R.id.tvTabTitle);
+                  if (getArguments() != null) {
+                      tv.setText(getArguments().getString(ARG_TITLE));
+                  }
+                  return view;
+              }
+          }
+          TABFRAGMENT
+
+      # ─── ic_launcher drawables (minimal valid PNG placeholders) ────────────────
+      - name: Create minimal launcher icon drawables
+        run: |
+          mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-hdpi
+          mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-mdpi
+          mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-xhdpi
+          mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-xxhdpi
+          mkdir -p salehjarghoun_130121038/app/src/main/res/mipmap-xxxhdpi
+
+          # Generate a simple coloured PNG using Python (avoids needing ImageMagick)
+          python3 - << 'PYEOF'
+          import struct, zlib, os
+
+          def make_png(size, r, g, b):
+              def chunk(name, data):
+                  c = zlib.crc32(name + data) & 0xffffffff
+                  return struct.pack('>I', len(data)) + name + data + struct.pack('>I', c)
+              ihdr = struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0)
+              raw = b''
+              for _ in range(size):
+                  row = b'\x00' + bytes([r, g, b] * size)
+                  raw += row
+              idat = zlib.compress(raw)
+              return b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', ihdr) + chunk(b'IDAT', idat) + chunk(b'IEND', b'')
+
+          sizes = {'mdpi':48,'hdpi':72,'xhdpi':96,'xxhdpi':144,'xxxhdpi':192}
+          for density, sz in sizes.items():
+              data = make_png(sz, 103, 58, 183)  # purple
+              path = f'salehjarghoun_130121038/app/src/main/res/mipmap-{density}/ic_launcher.png'
+              with open(path, 'wb') as f: f.write(data)
+              path2 = f'salehjarghoun_130121038/app/src/main/res/mipmap-{density}/ic_launcher_round.png'
+              with open(path2, 'wb') as f: f.write(data)
+          print("Icons created")
+          PYEOF
+
+      # ─── Set up Gradle Wrapper properly using Gradle itself ───────────────────
+      - name: Set up Gradle Wrapper
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
+
+      - name: Generate Gradle Wrapper inside project
+        working-directory: salehjarghoun_130121038
+        run: |
+          gradle wrapper --gradle-version 8.4 --distribution-type bin
+          chmod +x gradlew
+
+      # ─── Build the debug APK ───────────────────────────────────────────────────
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        working-directory: salehjarghoun_130121038
+        run: ./gradlew assembleDebug --stacktrace
 
-      - name: Build Release APK
-        run: ./gradlew assembleRelease --stacktrace --no-daemon
-
-      - name: Show APKs
-        run: find app/build/outputs/apk -name "*.apk" | xargs ls -lh
-
-      - name: Upload Debug APK
+      # ─── Upload APK as artifact ────────────────────────────────────────────────
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: saleh_jarghoun_1301215038-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
+          name: salehjarghoun_130121038-debug-apk
+          path: salehjarghoun_130121038/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: saleh_jarghoun_1301215038-release
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
-          retention-days: 30
+      # ─── Commit generated project files back to repo ─────────────────────────
+      - name: Commit project files to repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add salehjarghoun_130121038/
+          git diff --cached --quiet || git commit -m "chore: generate project files for salehjarghoun_130121038"
+          git push
